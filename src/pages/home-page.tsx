@@ -6,7 +6,7 @@ const HomePage = () => {
 
   useEffect(() => {
     navigate({
-      to: "/notes/$noteId",
+      to: "/$noteId",
       params: {
         noteId: "1",
       },

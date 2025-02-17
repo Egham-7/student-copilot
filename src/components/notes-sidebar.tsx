@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Plus, FileText } from "lucide-react";
+import { Trash2, FileText } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -7,6 +7,7 @@ import {
   SidebarHeader,
 } from "./ui/sidebar";
 import { Button } from "./ui/button";
+import { CreateNoteForm } from "./notes/note-create-form";
 
 interface Note {
   id: string;
@@ -19,14 +20,6 @@ export function NotesSidebar() {
     { id: "2", title: "Ideas for project" },
     { id: "3", title: "Shopping list" },
   ]);
-
-  const createNote = () => {
-    const newNote = {
-      id: Date.now().toString(),
-      title: `New Note ${notes.length + 1}`,
-    };
-    setNotes([...notes, newNote]);
-  };
 
   const deleteNote = (id: string) => {
     setNotes(notes.filter((note) => note.id !== id));
@@ -68,13 +61,7 @@ export function NotesSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-4">
-        <Button
-          className="w-full justify-start text-sidebar-primary-foreground bg-sidebar-primary hover:bg-sidebar-primary/90"
-          onClick={createNote}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Note
-        </Button>
+        <CreateNoteForm />
       </SidebarFooter>
     </Sidebar>
   );

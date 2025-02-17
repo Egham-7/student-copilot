@@ -7,9 +7,12 @@ import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
+import { useParams } from "@tanstack/react-router";
 
 export default function NotePage() {
   const [isSaving, setIsSaving] = useState(false);
+
+  const { noteId } = useParams({ from: "/_notes/$noteId/" });
 
   const editor = useCreateBlockNote({
     initialContent: [
@@ -144,7 +147,7 @@ export default function NotePage() {
   });
 
   return (
-    <Card className="border-none shadow-none">
+    <Card className="border-none shadow-none p-0 rounded-none">
       <CardHeader className="space-y-4 pb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -159,7 +162,7 @@ export default function NotePage() {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <BlockNoteView
           editor={editor}
           theme="light"

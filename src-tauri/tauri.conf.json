@@ -44,7 +44,7 @@
   },
   "plugins": {
     "sql": {
-      "all": true
+      "preload": ["sqlite:student_copilot.db"]
     }
   }
 }

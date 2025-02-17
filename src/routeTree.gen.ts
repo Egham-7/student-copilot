@@ -13,7 +13,8 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as NotesImport } from './routes/_notes'
 import { Route as IndexImport } from './routes/index'
-import { Route as NotesNoteIdIndexImport } from './routes/notes/$noteId/index'
+import { Route as NotesCreateIndexImport } from './routes/_notes/create/index'
+import { Route as NotesNoteIdIndexImport } from './routes/_notes/$noteId/index'
 
 // Create/Update Routes
 
@@ -28,10 +29,16 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const NotesCreateIndexRoute = NotesCreateIndexImport.update({
+  id: '/create/',
+  path: '/create/',
+  getParentRoute: () => NotesRoute,
+} as any)
+
 const NotesNoteIdIndexRoute = NotesNoteIdIndexImport.update({
-  id: '/notes/$noteId/',
-  path: '/notes/$noteId/',
-  getParentRoute: () => rootRoute,
+  id: '/$noteId/',
+  path: '/$noteId/',
+  getParentRoute: () => NotesRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -52,56 +59,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesImport
       parentRoute: typeof rootRoute
     }
-    '/notes/$noteId/': {
-      id: '/notes/$noteId/'
-      path: '/notes/$noteId'
-      fullPath: '/notes/$noteId'
+    '/_notes/$noteId/': {
+      id: '/_notes/$noteId/'
+      path: '/$noteId'
+      fullPath: '/$noteId'
       preLoaderRoute: typeof NotesNoteIdIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof NotesImport
+    }
+    '/_notes/create/': {
+      id: '/_notes/create/'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof NotesCreateIndexImport
+      parentRoute: typeof NotesImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface NotesRouteChildren {
+  NotesNoteIdIndexRoute: typeof NotesNoteIdIndexRoute
+  NotesCreateIndexRoute: typeof NotesCreateIndexRoute
+}
+
+const NotesRouteChildren: NotesRouteChildren = {
+  NotesNoteIdIndexRoute: NotesNoteIdIndexRoute,
+  NotesCreateIndexRoute: NotesCreateIndexRoute,
+}
+
+const NotesRouteWithChildren = NotesRoute._addFileChildren(NotesRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof NotesRoute
-  '/notes/$noteId': typeof NotesNoteIdIndexRoute
+  '': typeof NotesRouteWithChildren
+  '/$noteId': typeof NotesNoteIdIndexRoute
+  '/create': typeof NotesCreateIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof NotesRoute
-  '/notes/$noteId': typeof NotesNoteIdIndexRoute
+  '': typeof NotesRouteWithChildren
+  '/$noteId': typeof NotesNoteIdIndexRoute
+  '/create': typeof NotesCreateIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_notes': typeof NotesRoute
-  '/notes/$noteId/': typeof NotesNoteIdIndexRoute
+  '/_notes': typeof NotesRouteWithChildren
+  '/_notes/$noteId/': typeof NotesNoteIdIndexRoute
+  '/_notes/create/': typeof NotesCreateIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/notes/$noteId'
+  fullPaths: '/' | '' | '/$noteId' | '/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/notes/$noteId'
-  id: '__root__' | '/' | '/_notes' | '/notes/$noteId/'
+  to: '/' | '' | '/$noteId' | '/create'
+  id: '__root__' | '/' | '/_notes' | '/_notes/$noteId/' | '/_notes/create/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NotesRoute: typeof NotesRoute
-  NotesNoteIdIndexRoute: typeof NotesNoteIdIndexRoute
+  NotesRoute: typeof NotesRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NotesRoute: NotesRoute,
-  NotesNoteIdIndexRoute: NotesNoteIdIndexRoute,
+  NotesRoute: NotesRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -115,18 +142,26 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_notes",
-        "/notes/$noteId/"
+        "/_notes"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
     "/_notes": {
-      "filePath": "_notes.tsx"
+      "filePath": "_notes.tsx",
+      "children": [
+        "/_notes/$noteId/",
+        "/_notes/create/"
+      ]
     },
-    "/notes/$noteId/": {
-      "filePath": "notes/$noteId/index.tsx"
+    "/_notes/$noteId/": {
+      "filePath": "_notes/$noteId/index.tsx",
+      "parent": "/_notes"
+    },
+    "/_notes/create/": {
+      "filePath": "_notes/create/index.tsx",
+      "parent": "/_notes"
     }
   }
 }
