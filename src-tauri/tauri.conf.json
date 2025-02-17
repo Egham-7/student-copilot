@@ -13,8 +13,15 @@
     "windows": [
       {
         "title": "student-copilot",
-        "width": 800,
-        "height": 600
+        "width": 1024,
+        "height": 768,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "transparent": false,
+        "minWidth": 800,
+        "minHeight": 600
       }
     ],
     "security": {
@@ -24,6 +31,9 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "publisher": "Your Organization",
+    "category": "Education",
+    "shortDescription": "A student's companion app",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -31,5 +41,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "sql": {
+      "all": true
+    }
   }
 }
