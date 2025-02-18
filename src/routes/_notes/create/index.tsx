@@ -1,9 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
+import NoteCreatePage from "@/pages/note-create-page";
 
-export const Route = createFileRoute('/_notes/create/')({
-  component: RouteComponent,
-})
+export const Route = createFileRoute("/_notes/create/")({
+  component: NoteCreateRoute,
+});
 
-function RouteComponent() {
-  return <div>Hello "/_notes/create/"!</div>
+function NoteCreateRoute() {
+  return <NoteCreatePage />;
 }

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { db } from "@/lib/db";
+import { Note } from "@/lib/models/note";
 
 export const useNotes = () => {
   return useQuery({
@@ -8,7 +9,7 @@ export const useNotes = () => {
       const result = await db.select(
         "SELECT rowid, * FROM notes ORDER BY created_at DESC",
       );
-      return result;
+      return result as Note[];
     },
   });
 };

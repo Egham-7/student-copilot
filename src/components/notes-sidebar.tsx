@@ -1,29 +1,21 @@
-import { useState } from "react";
 import { Trash2, FileText } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-} from "./ui/sidebar";
-import { Button } from "./ui/button";
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { CreateNoteForm } from "./notes/note-create-form";
-
-interface Note {
-  id: string;
-  title: string;
-}
+import { useNotes } from "@/hooks/notes/use-notes";
+import { SkeletonItem } from "./skeleton-item";
+import { ErrorState } from "./error-display";
+import { useDeleteNote } from "@/hooks/notes/use-delete-note";
 
 export function NotesSidebar() {
-  const [notes, setNotes] = useState<Note[]>([
-    { id: "1", title: "Meeting notes" },
-    { id: "2", title: "Ideas for project" },
-    { id: "3", title: "Shopping list" },
-  ]);
+  const { data: notes, isLoading, isError, refetch } = useNotes();
 
-  const deleteNote = (id: string) => {
-    setNotes(notes.filter((note) => note.id !== id));
-  };
+  const { mutateAsync: deleteNote } = useDeleteNote();
 
   return (
     <Sidebar className="bg-sidebar border-r border-sidebar-border">
@@ -34,30 +26,40 @@ export function NotesSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <ul className="space-y-2">
-          {notes.map((note) => (
-            <li
-              key={note.id}
-              className="flex items-center justify-between px-4 py-2 hover:bg-sidebar-accent group transition-colors"
-            >
-              <div className="flex items-center text-sidebar-foreground">
-                <FileText className="mr-2 h-4 w-4 text-sidebar-primary" />
-                <span className="text-sm">{note.title}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="opacity-0 group-hover:opacity-100 text-sidebar-primary hover:text-destructive hover:bg-destructive/10"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteNote(note.id);
-                }}
+        {isLoading && <SkeletonItem count={5} />}
+
+        {isError && (
+          <ErrorState
+            message="Failed to load notes"
+            onRetry={() => refetch()}
+          />
+        )}
+
+        {!isLoading && !isError && (
+          <ul className="space-y-2">
+            {notes?.map((note) => (
+              <li
+                key={note.rowid}
+                className="flex items-center justify-between px-4 py-2 hover:bg-sidebar-accent group transition-colors"
               >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </li>
-          ))}
-        </ul>
+                <div className="flex items-center text-sidebar-foreground">
+                  <FileText className="mr-2 h-4 w-4 text-sidebar-primary" />
+                  <span className="text-sm">{note.title}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="opacity-0 group-hover:opacity-100 text-sidebar-primary hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    deleteNote(note.rowid);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-4">

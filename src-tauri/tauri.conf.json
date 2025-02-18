@@ -45,6 +45,10 @@
   "plugins": {
     "sql": {
       "preload": ["sqlite:student_copilot.db"]
+    },
+    "env": {
+      "all": true,
+      "vars": ["OPENAI_API_KEY"]
     }
   }
 }
