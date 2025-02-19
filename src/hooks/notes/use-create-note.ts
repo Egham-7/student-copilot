@@ -8,16 +8,14 @@ export const useCreateNote = () => {
     mutationFn: async ({
       title,
       content,
-      embedding,
     }: {
       title: string;
       content: string;
-      embedding: number[];
     }) => {
       const now = new Date().toISOString();
       const result = await db.execute(
-        "INSERT INTO notes (title, content, embedding, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-        [title, content, embedding, now, now],
+        "INSERT INTO notes (title, content,  created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING id",
+        [title, content, now, now],
       );
 
       return result.lastInsertId;

@@ -98,7 +98,7 @@ export function CreateNoteForm() {
 
       const results = await Promise.all(
         selectedFiles.map((file) =>
-          invoke<{ content: string; embeddings: number[] }>("process_file", {
+          invoke<string>("process_file", {
             filePath: file.path,
           }),
         ),
@@ -107,7 +107,6 @@ export function CreateNoteForm() {
       const noteId = await createNote({
         title: values.title,
         content: "",
-        embedding: [],
       });
 
       if (!noteId) {
@@ -122,8 +121,7 @@ export function CreateNoteForm() {
         results.map((result, index) =>
           createNoteContext({
             title: values.title,
-            content: result.content,
-            embedding: result.embeddings,
+            content: result,
             filePath: selectedFiles[index].path,
             noteId: noteId,
           }),

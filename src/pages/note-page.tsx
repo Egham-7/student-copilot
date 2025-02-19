@@ -1,150 +1,81 @@
-import { useState } from "react";
+import { useCallback, useEffect } from "react";
 import { SaveIcon, FileIcon } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 import "@blocknote/core/fonts/inter.css";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
+import "@blocknote/mantine/style.css";
 import { useParams } from "@tanstack/react-router";
+import { useNote } from "@/hooks/notes/use-note";
+import { useUpdateNote } from "@/hooks/notes/use-update-note";
+import { SkeletonItem } from "@/components/skeleton-item";
+import { ErrorState } from "@/components/error-display";
+import { useHotkeys, useDebouncedCallback } from "@mantine/hooks";
+import { useToast } from "@/hooks/use-toast";
+import { BlockNoteView } from "@blocknote/mantine";
 
 export default function NotePage() {
-  const [isSaving, setIsSaving] = useState(false);
-
   const { noteId } = useParams({ from: "/_notes/$noteId/" });
+  const { data: note, isLoading, isError, refetch } = useNote(Number(noteId));
+  const { mutateAsync: updateNote, isPending: isSaving } = useUpdateNote();
+  const { toast } = useToast();
 
   const editor = useCreateBlockNote({
-    initialContent: [
-      {
-        type: "paragraph",
-        content: "Welcome to this demo!",
+    domAttributes: {
+      editor: {
+        "data-unsaved": "true",
       },
-      {
-        type: "paragraph",
-      },
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: "Blocks:",
-            styles: { bold: true },
-          },
-        ],
-      },
-      {
-        type: "paragraph",
-        content: "Paragraph",
-      },
-      {
-        type: "heading",
-        content: "Heading",
-      },
-      {
-        type: "bulletListItem",
-        content: "Bullet List Item",
-      },
-      {
-        type: "numberedListItem",
-        content: "Numbered List Item",
-      },
-      {
-        type: "checkListItem",
-        content: "Check List Item",
-      },
-      {
-        type: "codeBlock",
-        props: { language: "javascript" },
-        content: "console.log('Hello, world!');",
-      },
-      {
-        type: "table",
-        content: {
-          type: "tableContent",
-          rows: [
-            {
-              cells: ["Table Cell", "Table Cell", "Table Cell"],
-            },
-            {
-              cells: ["Table Cell", "Table Cell", "Table Cell"],
-            },
-            {
-              cells: ["Table Cell", "Table Cell", "Table Cell"],
-            },
-          ],
-        },
-      },
-      {
-        type: "file",
-      },
-      {
-        type: "image",
-        props: {
-          url: "https://interactive-examples.mdn.mozilla.net/media/cc0-images/grapefruit-slice-332-332.jpg",
-          caption:
-            "From https://interactive-examples.mdn.mozilla.net/media/cc0-images/grapefruit-slice-332-332.jpg",
-        },
-      },
-      {
-        type: "video",
-        props: {
-          url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
-          caption:
-            "From https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
-        },
-      },
-      {
-        type: "audio",
-        props: {
-          url: "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
-          caption:
-            "From https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
-        },
-      },
-      {
-        type: "paragraph",
-      },
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: "Inline Content:",
-            styles: { bold: true },
-          },
-        ],
-      },
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: "Styled Text",
-            styles: {
-              bold: true,
-              italic: true,
-              textColor: "red",
-              backgroundColor: "blue",
-            },
-          },
-          {
-            type: "text",
-            text: " ",
-            styles: {},
-          },
-          {
-            type: "link",
-            content: "Link",
-            href: "https://www.blocknotejs.org",
-          },
-        ],
-      },
-      {
-        type: "paragraph",
+    },
+  });
+
+  useEffect(() => {
+    if (note?.content && editor) {
+      const parsedContent = JSON.parse(note.content);
+      editor.replaceBlocks(editor.document, parsedContent);
+    }
+  }, [note?.content, editor]);
+
+  const saveNote = useCallback(async () => {
+    if (!editor || !note) return;
+
+    try {
+      await updateNote({
+        id: note.id,
+        title: note.title,
+        content: JSON.stringify(editor.document),
+      });
+
+      toast({
+        title: "Saved successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to save",
+        variant: "destructive",
+      });
+    }
+  }, [editor, note, updateNote, toast]);
+
+  const debouncedSave = useDebouncedCallback(saveNote, 1000);
+
+  useHotkeys([
+    [
+      "mod+S",
+      (e) => {
+        e.preventDefault();
+        saveNote();
       },
     ],
-  });
+  ]);
+
+  if (isLoading) return <SkeletonItem count={5} />;
+  if (isError)
+    return (
+      <ErrorState message="Failed to load note" onRetry={() => refetch()} />
+    );
+
+  const hasUnsavedChanges =
+    editor.document !== JSON.parse(note?.content || "[]");
 
   return (
     <Card className="border-none shadow-none p-0 rounded-none">
@@ -152,13 +83,25 @@ export default function NotePage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <FileIcon className="h-5 w-5 text-primary" />
-            <h1 className="text-2xl font-semibold text-foreground">My Notes</h1>
+            <h1 className="text-2xl font-semibold text-foreground">
+              {note?.title}
+            </h1>
           </div>
-          <Button size="sm" variant="outline" className="text-muted-foreground">
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-muted-foreground"
+            onClick={saveNote}
+            disabled={!hasUnsavedChanges}
+          >
             <SaveIcon
               className={`h-4 w-4 mr-2 ${isSaving ? "animate-spin" : ""}`}
             />
-            {isSaving ? "Saving..." : "Saved"}
+            {isSaving
+              ? "Saving..."
+              : hasUnsavedChanges
+                ? "Save changes"
+                : "Saved"}
           </Button>
         </div>
       </CardHeader>
@@ -166,6 +109,7 @@ export default function NotePage() {
         <BlockNoteView
           editor={editor}
           theme="light"
+          onChange={debouncedSave}
           className="min-h-[calc(100vh-12rem)] rounded-lg border border-border bg-card p-4"
         />
       </CardContent>

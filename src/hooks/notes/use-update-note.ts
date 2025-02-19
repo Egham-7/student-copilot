@@ -10,17 +10,15 @@ export const useUpdateNote = () => {
       id,
       title,
       content,
-      embedding,
     }: {
       id: number;
       title: string;
       content: string;
-      embedding: number[];
     }) => {
       const now = new Date().toISOString();
       return await db.execute(
-        "UPDATE notes SET title = $1, content = $2, embedding = $3, updated_at = $4 WHERE rowid = $5",
-        [title, content, embedding, now, id],
+        "UPDATE notes SET title = $1, content = $2,  updated_at = $3 WHERE id = $4",
+        [title, content, now, id],
       );
     },
     onSuccess: (_, variables) => {

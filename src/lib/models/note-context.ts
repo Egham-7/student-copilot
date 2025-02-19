@@ -1,5 +1,6 @@
 export interface NoteContext {
   rowid: number;
+  id: number;
   title: string;
   content: string;
   embedding: number[];

@@ -7,7 +7,10 @@ export const useDeleteNote = () => {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      return await db.execute("DELETE FROM notes WHERE rowid = $1", [id]);
+      // First delete all associated context records
+      await db.execute("DELETE FROM note_context WHERE note_id = $1", [id]);
+      // Then delete the note
+      await db.execute("DELETE FROM notes WHERE id = $1", [id]);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });

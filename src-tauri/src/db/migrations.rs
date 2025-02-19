@@ -4,34 +4,33 @@ pub fn get_migrations() -> Vec<Migration> {
     vec![Migration {
         version: 1,
         description: "create_notes_and_context_tables",
-        sql: r#"
-            -- Enable vector similarity search
-            SELECT load_extension('sqlite-vss');
-            
-            -- Create notes table with VSS support
-            CREATE VIRTUAL TABLE IF NOT EXISTS notes USING vss0(
-                embedding(1536),
+        sql: "
+            -- Create notes table
+            CREATE TABLE IF NOT EXISTS notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 content TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
-
-            -- Create context table with VSS support
-            CREATE VIRTUAL TABLE IF NOT EXISTS context USING vss0(
-                embedding(1536),
+            
+            -- Create context table
+            CREATE TABLE IF NOT EXISTS note_context (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 content TEXT NOT NULL,
-                filePath TEXT NOT NULL,
-                noteId INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                note_id INTEGER NOT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
-                FOREIGN KEY(note_id) REFERENCES notes(rowid)
+                FOREIGN KEY(note_id) REFERENCES notes(id)
             );
-
+            
             -- Create index for faster lookups
-            CREATE INDEX IF NOT EXISTS idx_context_note_id ON context(note_id);
-        "#,
+            CREATE INDEX IF NOT EXISTS idx_context_note_id ON note_context(note_id);
+        ",
         kind: MigrationKind::Up,
     }]
 }
+
+

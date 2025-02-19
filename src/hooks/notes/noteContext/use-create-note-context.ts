@@ -10,17 +10,13 @@ export const useCreateNoteContext = () => {
     mutationFn: async ({
       title,
       content,
-      embedding,
       filePath,
       noteId,
-    }: Pick<
-      NoteContext,
-      "title" | "content" | "embedding" | "filePath" | "noteId"
-    >) => {
+    }: Pick<NoteContext, "title" | "content" | "filePath" | "noteId">) => {
       const now = new Date().toISOString();
       return await db.execute(
-        "INSERT INTO note_context (title, content, embedding, file_path, note_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-        [title, content, embedding, filePath, noteId, now, now],
+        "INSERT INTO note_context (title, content, file_path, note_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)",
+        [title, content, filePath, noteId, now, now],
       );
     },
     onSuccess: (_, variables) => {

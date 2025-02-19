@@ -1,5 +1,5 @@
 export interface Note {
-  rowid: number;
+  id: number;
   title: string;
   content: string;
   embedding: number[];

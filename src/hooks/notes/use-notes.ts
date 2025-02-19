@@ -6,9 +6,18 @@ export const useNotes = () => {
   return useQuery({
     queryKey: ["notes"],
     queryFn: async () => {
-      const result = await db.select(
-        "SELECT rowid, * FROM notes ORDER BY created_at DESC",
-      );
+      // Using specific column names instead of *
+      const result = await db.select(`
+        SELECT 
+          id, 
+          title, 
+          content, 
+          created_at, 
+          updated_at 
+        FROM notes 
+        ORDER BY created_at DESC
+      `);
+
       return result as Note[];
     },
   });

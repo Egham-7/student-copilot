@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,99 +6,113 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  DrawerClose,
 } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DeleteConfirmationProps {
-  title?: string;
-  description?: string;
-  onDelete: () => Promise<void>;
+  title: string;
+  description: string;
+  onDelete: () => Promise<void> | void;
   trigger?: React.ReactNode;
-  children?: React.ReactNode;
-  isLoading?: boolean;
 }
 
 export function DeleteConfirmation({
-  title = "Are you absolutely sure?",
-  description = "This action cannot be undone.",
+  title,
+  description,
   onDelete,
   trigger,
-  children,
-  isLoading,
 }: DeleteConfirmationProps) {
   const isMobile = useIsMobile();
 
-  if (!isMobile) {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>
-          {trigger || (
-            <Button variant="destructive" size="sm">
+  const Content = () => (
+    <>
+      {isMobile ? (
+        <DrawerHeader>
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription>{description}</DrawerDescription>
+        </DrawerHeader>
+      ) : (
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+      )}
+      {isMobile ? (
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="destructive" onClick={onDelete}>
               Delete
             </Button>
-          )}
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
-          {children}
-          <DialogFooter>
-            <Button
-              variant="destructive"
-              disabled={isLoading}
-              onClick={onDelete}
-            >
-              {isLoading ? "Deleting..." : "Delete"}
+          </DrawerClose>
+          <DrawerClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      ) : (
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button variant="destructive" onClick={onDelete}>
+              Delete
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </DialogClose>
+        </DialogFooter>
+      )}
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>
+          {trigger || (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sidebar-primary hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </DrawerTrigger>
+        <DrawerContent>
+          <Content />
+        </DrawerContent>
+      </Drawer>
     );
   }
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         {trigger || (
-          <Button variant="destructive" size="sm">
-            Delete
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-sidebar-primary hover:text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-4 w-4" />
           </Button>
         )}
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
-        </DrawerHeader>
-        {children}
-        <DrawerFooter className="pt-2">
-          <Button
-            variant="destructive"
-            disabled={isLoading}
-            onClick={onDelete}
-            className="w-full"
-          >
-            {isLoading ? "Deleting..." : "Delete"}
-          </Button>
-          <DrawerClose asChild>
-            <Button variant="outline" className="w-full">
-              Cancel
-            </Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+      </DialogTrigger>
+      <DialogContent>
+        <Content />
+      </DialogContent>
+    </Dialog>
   );
 }
