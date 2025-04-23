@@ -3,6 +3,7 @@ import { NotesSidebar } from "@/components/notes-sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 import { useEffect } from "react";
+import { Protected } from "./protected-layout";
 
 export function NotesLayout() {
   const session = useSupabaseSession();
@@ -18,12 +19,14 @@ export function NotesLayout() {
   if (!session) return null;
 
   return (
-    <div className="flex h-screen w-screen">
-      <NotesSidebar />
-      <main className="flex-1 overflow-auto bg-background">
-        <SidebarTrigger />
-        <Outlet />
-      </main>
-    </div>
+    <Protected>
+      <div className="flex h-screen w-screen">
+        <NotesSidebar />
+        <main className="flex-1 overflow-auto bg-background">
+          <SidebarTrigger />
+          <Outlet />
+        </main>
+      </div>
+    </Protected>
   );
 }

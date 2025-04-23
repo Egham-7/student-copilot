@@ -5,12 +5,23 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY,
 );
 
-export async function signUpNewUser() {
-  const { data, error } = await supabase.auth.signUp({
-    email: "valid.email@supabase.io",
-    password: "example-password",
+export async function signUpNewUser(
+  email: string,
+  password: string,
+  redirect_url: string,
+) {
+  return await supabase.auth.signUp({
+    email: email,
+    password: password,
     options: {
-      emailRedirectTo: "https://example.com/welcome",
+      emailRedirectTo: redirect_url,
     },
+  });
+}
+
+export async function signInWithEmail(email: string, password: string) {
+  return supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
   });
 }

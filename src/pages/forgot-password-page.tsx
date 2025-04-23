@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+import { supabase } from "@/lib/supabase";
 // Form schema with zod
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -46,15 +46,15 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      // Simulate API call to request password reset
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await supabase.auth.resetPasswordForEmail(values.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
       // Set success message in local state
       setSuccessMessage(
         "Password reset instructions have been sent to your email.",
       );
 
-      // Reset the form values but keep the success state
       form.reset({}, { keepValues: false, keepIsSubmitSuccessful: true });
     } catch (error) {
       // Set form-level error
