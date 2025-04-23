@@ -10,7 +10,7 @@ export async function signUpNewUser(
   password: string,
   redirect_url: string,
 ) {
-  return await supabase.auth.signUp({
+  return supabase.auth.signUp({
     email: email,
     password: password,
     options: {
