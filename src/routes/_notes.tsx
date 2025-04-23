@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { NotesLayout } from "@/layouts/notes";
+import { NotesLayout } from "@/layouts/notes-layout";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 

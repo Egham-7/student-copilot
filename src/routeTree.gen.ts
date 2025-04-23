@@ -11,15 +11,30 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ForgotPasswordImport } from './routes/forgot-password'
 import { Route as NotesImport } from './routes/_notes'
+import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as NotesCreateIndexImport } from './routes/_notes/create/index'
 import { Route as NotesNoteIdIndexImport } from './routes/_notes/$noteId/index'
+import { Route as AuthSignupIndexImport } from './routes/_auth/signup/index'
+import { Route as AuthLoginIndexImport } from './routes/_auth/login/index'
 
 // Create/Update Routes
 
+const ForgotPasswordRoute = ForgotPasswordImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const NotesRoute = NotesImport.update({
   id: '/_notes',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -41,6 +56,18 @@ const NotesNoteIdIndexRoute = NotesNoteIdIndexImport.update({
   getParentRoute: () => NotesRoute,
 } as any)
 
+const AuthSignupIndexRoute = AuthSignupIndexImport.update({
+  id: '/signup/',
+  path: '/signup/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthLoginIndexRoute = AuthLoginIndexImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -52,12 +79,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
     '/_notes': {
       id: '/_notes'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof NotesImport
       parentRoute: typeof rootRoute
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth/login/': {
+      id: '/_auth/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/signup/': {
+      id: '/_auth/signup/'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof AuthSignupIndexImport
+      parentRoute: typeof AuthImport
     }
     '/_notes/$noteId/': {
       id: '/_notes/$noteId/'
@@ -78,6 +133,18 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AuthRouteChildren {
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
+  AuthSignupIndexRoute: typeof AuthSignupIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginIndexRoute: AuthLoginIndexRoute,
+  AuthSignupIndexRoute: AuthSignupIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 interface NotesRouteChildren {
   NotesNoteIdIndexRoute: typeof NotesNoteIdIndexRoute
   NotesCreateIndexRoute: typeof NotesCreateIndexRoute
@@ -93,6 +160,9 @@ const NotesRouteWithChildren = NotesRoute._addFileChildren(NotesRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof NotesRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof AuthLoginIndexRoute
+  '/signup': typeof AuthSignupIndexRoute
   '/$noteId': typeof NotesNoteIdIndexRoute
   '/create': typeof NotesCreateIndexRoute
 }
@@ -100,6 +170,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof NotesRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof AuthLoginIndexRoute
+  '/signup': typeof AuthSignupIndexRoute
   '/$noteId': typeof NotesNoteIdIndexRoute
   '/create': typeof NotesCreateIndexRoute
 }
@@ -107,28 +180,59 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/_notes': typeof NotesRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/_auth/login/': typeof AuthLoginIndexRoute
+  '/_auth/signup/': typeof AuthSignupIndexRoute
   '/_notes/$noteId/': typeof NotesNoteIdIndexRoute
   '/_notes/create/': typeof NotesCreateIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/$noteId' | '/create'
+  fullPaths:
+    | '/'
+    | ''
+    | '/forgot-password'
+    | '/login'
+    | '/signup'
+    | '/$noteId'
+    | '/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/$noteId' | '/create'
-  id: '__root__' | '/' | '/_notes' | '/_notes/$noteId/' | '/_notes/create/'
+  to:
+    | '/'
+    | ''
+    | '/forgot-password'
+    | '/login'
+    | '/signup'
+    | '/$noteId'
+    | '/create'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/_notes'
+    | '/forgot-password'
+    | '/_auth/login/'
+    | '/_auth/signup/'
+    | '/_notes/$noteId/'
+    | '/_notes/create/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
   NotesRoute: typeof NotesRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   NotesRoute: NotesRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
 }
 
 export const routeTree = rootRoute
@@ -142,11 +246,20 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_notes"
+        "/_auth",
+        "/_notes",
+        "/forgot-password"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/login/",
+        "/_auth/signup/"
+      ]
     },
     "/_notes": {
       "filePath": "_notes.tsx",
@@ -154,6 +267,17 @@ export const routeTree = rootRoute
         "/_notes/$noteId/",
         "/_notes/create/"
       ]
+    },
+    "/forgot-password": {
+      "filePath": "forgot-password.tsx"
+    },
+    "/_auth/login/": {
+      "filePath": "_auth/login/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/signup/": {
+      "filePath": "_auth/signup/index.tsx",
+      "parent": "/_auth"
     },
     "/_notes/$noteId/": {
       "filePath": "_notes/$noteId/index.tsx",

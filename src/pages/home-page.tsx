@@ -3,12 +3,16 @@ import { useNavigate } from "@tanstack/react-router";
 import { useNotes } from "@/hooks/notes/use-notes";
 import { SkeletonItem } from "@/components/skeleton-item";
 import { ErrorState } from "@/components/error-display";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { data: notes, isLoading, isError, refetch } = useNotes();
+  const session = useSupabaseSession();
 
   useEffect(() => {
+    if (!session) {
+    }
     if (notes && notes.length > 0) {
       navigate({
         to: "/$noteId",
