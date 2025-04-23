@@ -75,11 +75,10 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:student_copilot.db", migrations::get_migrations())
+                .add_migrations("postgres://postgres.tzxxdfmjkypqgzvggttj:Nfzl2WiXPPu343BB@aws-0-eu-west-2.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x", migrations::get_migrations())
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![process_file])
         .run(tauri::generate_context!())
         .unwrap()
 }
-
