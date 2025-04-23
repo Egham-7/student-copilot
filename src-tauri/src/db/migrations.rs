@@ -3,22 +3,26 @@ use tauri_plugin_sql::{Migration, MigrationKind};
 pub fn get_migrations() -> Vec<Migration> {
     vec![Migration {
         version: 1,
-        description: "create_notes_and_context_tables_with_vector",
+        description: "hybrid_search_notes_and_context",
         sql: r#"
-            -- Enable pgvector extension
             CREATE EXTENSION IF NOT EXISTS vector;
+            CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-            -- Create notes table
+            -- Notes table
             CREATE TABLE IF NOT EXISTS notes (
                 id SERIAL PRIMARY KEY,
                 title TEXT NOT NULL,
                 content TEXT NOT NULL,
                 embedding vector(1536),
+                fts tsvector GENERATED ALWAYS AS (
+                    setweight(to_tsvector('english', title), 'A') ||
+                    setweight(to_tsvector('english', content), 'B')
+                ) STORED,
                 created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
                 updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
             );
 
-            -- Create note_context table
+            -- Note context table
             CREATE TABLE IF NOT EXISTS note_context (
                 id SERIAL PRIMARY KEY,
                 title TEXT NOT NULL,
@@ -26,26 +30,21 @@ pub fn get_migrations() -> Vec<Migration> {
                 file_path TEXT NOT NULL,
                 note_id INTEGER NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
                 embedding vector(1536),
+                fts tsvector GENERATED ALWAYS AS (
+                    setweight(to_tsvector('english', title), 'A') ||
+                    setweight(to_tsvector('english', content), 'B')
+                ) STORED,
                 created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
                 updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
             );
 
-            -- Create index for faster lookups by note_id
-            CREATE INDEX IF NOT EXISTS idx_context_note_id ON note_context(note_id);
-
-            -- Create vector index for note_context embedding similarity search
-            CREATE INDEX IF NOT EXISTS idx_context_embedding
-                ON note_context
-                USING ivfflat (embedding vector_cosine_ops)
-                WITH (lists = 100);
-
-            -- Create vector index for notes embedding similarity search
-            CREATE INDEX IF NOT EXISTS idx_notes_embedding
-                ON notes
-                USING ivfflat (embedding vector_cosine_ops)
-                WITH (lists = 100);
+            -- Indexes
+            CREATE INDEX IF NOT EXISTS idx_note_context_note_id ON note_context(note_id);
+            CREATE INDEX IF NOT EXISTS idx_notes_embedding ON notes USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+            CREATE INDEX IF NOT EXISTS idx_note_context_embedding ON note_context USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+            CREATE INDEX IF NOT EXISTS idx_notes_fts ON notes USING GIN (fts);
+            CREATE INDEX IF NOT EXISTS idx_note_context_fts ON note_context USING GIN (fts);
         "#,
         kind: MigrationKind::Up,
     }]
 }
-
