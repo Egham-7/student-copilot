@@ -12,9 +12,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { SocialAuthButtons } from "./social-auth-buttons";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import AuthBanner from "./auth-banner";
+import { signInWithEmail } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -32,9 +34,24 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(values: LoginValues) {
-    // handle login
-    console.log(values);
+  const navigate = useNavigate();
+
+  async function onSubmit(values: LoginValues) {
+    try {
+      const { email, password } = values;
+
+      const reponse = await signInWithEmail(email, password);
+
+      if (reponse.error) {
+        toast.error(reponse.error.message);
+        return;
+      }
+
+      navigate({ to: "/" });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      toast.error("Error logging in. Please try again.");
+    }
   }
 
   return (

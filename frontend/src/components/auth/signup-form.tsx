@@ -12,9 +12,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { SocialAuthButtons } from "./social-auth-buttons";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import AuthBanner from "./auth-banner";
+import { signUpNewUser } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const signupSchema = z
   .object({
@@ -41,9 +43,20 @@ export function SignupForm() {
     },
   });
 
-  function onSubmit(values: SignupValues) {
-    // handle signup
-    console.log(values);
+  const navigate = useNavigate();
+
+  async function onSubmit(values: SignupValues) {
+    try {
+      const { email, password } = values;
+
+      const redirect_url = `${window.location.origin}/`;
+
+      await signUpNewUser(email, password, redirect_url);
+      navigate({ to: "/login" });
+    } catch (error) {
+      console.error("Error signing up:", error);
+      toast.error("Error signing up. Please try again.");
+    }
   }
 
   return (
