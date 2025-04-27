@@ -6,7 +6,7 @@ import {
   timestamp,
   vector,
   index,
-  varchar,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 // Notes table
@@ -15,10 +15,8 @@ export const notes = pgTable(
   {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
-    content: text("content").notNull(),
+    content: jsonb("content"),
     embedding: vector("embedding", { dimensions: 1536 }),
-    // For FTS, you can add a tsvector column, but generated columns must be handled in migrations
-    fts: text("fts"), // Use text for now; set as generated in migration
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -29,19 +27,15 @@ export const notes = pgTable(
   (table) => [index("idx_notes_embedding").on(table.embedding)],
 );
 
-// Note context table
-export const noteContext = pgTable(
-  "note_context",
+// Knowledge Artifacts table (no noteId)
+export const knowledgeArtifacts = pgTable(
+  "knowledge_artifacts",
   {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
     content: text("content").notNull(),
     filePath: text("file_path").notNull(),
-    noteId: integer("note_id")
-      .notNull()
-      .references(() => notes.id, { onDelete: "cascade" }),
     embedding: vector("embedding", { dimensions: 1536 }),
-    fts: text("fts"), // Use text for now; set as generated in migration
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -49,5 +43,5 @@ export const noteContext = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [index("idx_note_context_note_id").on(table.noteId)],
+  (table) => [index("idx_knowledge_artifacts_embedding").on(table.embedding)],
 );

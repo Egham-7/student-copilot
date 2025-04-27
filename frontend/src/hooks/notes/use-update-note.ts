@@ -1,6 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { db } from "@/lib/db";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import type { PartialBlock } from "@blocknote/core";
+import { notesService } from "@/services/notes";
 
 export const useUpdateNote = () => {
   const queryClient = useQueryClient();
@@ -10,16 +10,19 @@ export const useUpdateNote = () => {
       id,
       title,
       content,
+      embedding,
     }: {
       id: number;
       title: string;
-      content: string;
+      content: PartialBlock[];
+      embedding?: number[] | null;
     }) => {
-      const now = new Date().toISOString();
-      return await db.execute(
-        "UPDATE notes SET title = $1, content = $2,  updated_at = $3 WHERE id = $4",
-        [title, content, now, id],
-      );
+      // Call the service to update the note
+      return await notesService.update(id, {
+        title,
+        content,
+        embedding,
+      });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });

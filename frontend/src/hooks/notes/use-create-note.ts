@@ -1,5 +1,6 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { db } from "@/lib/db";
+import type { PartialBlock } from "@blocknote/core";
+import { notesService } from "@/services/notes";
 
 export const useCreateNote = () => {
   const queryClient = useQueryClient();
@@ -8,17 +9,18 @@ export const useCreateNote = () => {
     mutationFn: async ({
       title,
       content,
+      embedding,
     }: {
       title: string;
-      content: string;
+      content: PartialBlock[];
+      embedding?: number[] | null;
     }) => {
-      const now = new Date().toISOString();
-      const result = await db.execute(
-        "INSERT INTO notes (title, content,  created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING id",
-        [title, content, now, now],
-      );
-
-      return result.lastInsertId;
+      const note = await notesService.create({
+        title,
+        content,
+        embedding,
+      });
+      return note.id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });

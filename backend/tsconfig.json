@@ -13,7 +13,10 @@
     "jsx": "react-jsx", // JSX transform for Hono
     "jsxImportSource": "hono/jsx", // Use Hono's JSX runtime
     "resolveJsonModule": true, // Allow importing .json files
-    "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

@@ -1,16 +1,13 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { db } from "@/lib/db";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { notesService } from "@/services/notes";
 
 export const useDeleteNote = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: number) => {
-      // First delete all associated context records
-      await db.execute("DELETE FROM note_context WHERE note_id = $1", [id]);
-      // Then delete the note
-      await db.execute("DELETE FROM notes WHERE id = $1", [id]);
+      // Use the service, which handles deleting the note (and, on the backend, any cascading deletes)
+      await notesService.delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
