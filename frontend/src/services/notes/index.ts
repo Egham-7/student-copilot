@@ -1,6 +1,6 @@
-import type { Note, NoteForm } from "@/types/notes";
+import type { Note, NoteUpdate, NoteCreate } from '@/types/notes';
 
-import { API_BASE_URL } from "..";
+import { API_BASE_URL } from '..';
 
 const NOTES_BASE = `${API_BASE_URL}/notes`;
 
@@ -8,41 +8,41 @@ export const notesService = {
   // --- Notes ---
   async getAll(): Promise<Note[]> {
     const res = await fetch(NOTES_BASE);
-    if (!res.ok) throw new Error("Failed to fetch notes");
+    if (!res.ok) throw new Error('Failed to fetch notes');
     return res.json();
   },
 
   async getById(id: number): Promise<Note> {
     const res = await fetch(`${NOTES_BASE}/${id}`);
-    if (!res.ok) throw new Error("Note not found");
+    if (!res.ok) throw new Error('Note not found');
     return res.json();
   },
 
-  async create(data: NoteForm): Promise<Note> {
+  async create(data: NoteCreate): Promise<Note> {
     const res = await fetch(NOTES_BASE, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to create note");
+    if (!res.ok) throw new Error('Failed to create note');
     return res.json();
   },
 
-  async update(id: number, data: NoteForm): Promise<Note> {
+  async update(id: number, data: Omit<NoteUpdate, 'id'>): Promise<Note> {
     const res = await fetch(`${NOTES_BASE}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to update note");
+    if (!res.ok) throw new Error('Failed to update note');
     return res.json();
   },
 
   async delete(id: number): Promise<Note> {
     const res = await fetch(`${NOTES_BASE}/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     });
-    if (!res.ok) throw new Error("Failed to delete note");
+    if (!res.ok) throw new Error('Failed to delete note');
     return res.json();
   },
 };

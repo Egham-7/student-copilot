@@ -1,6 +1,6 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import type { PartialBlock } from "@blocknote/core";
-import { notesService } from "@/services/notes";
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { notesService } from '@/services/notes';
+import { NoteUpdate } from '@/types/notes';
 
 export const useUpdateNote = () => {
   const queryClient = useQueryClient();
@@ -11,22 +11,19 @@ export const useUpdateNote = () => {
       title,
       content,
       embedding,
-    }: {
-      id: number;
-      title: string;
-      content: PartialBlock[];
-      embedding?: number[] | null;
-    }) => {
+      userId,
+    }: NoteUpdate) => {
       // Call the service to update the note
       return await notesService.update(id, {
         title,
         content,
         embedding,
+        userId,
       });
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      queryClient.invalidateQueries({ queryKey: ["notes", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      queryClient.invalidateQueries({ queryKey: ['notes', variables.id] });
     },
   });
 };
