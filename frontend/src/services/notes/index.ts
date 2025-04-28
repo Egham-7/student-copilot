@@ -1,5 +1,3 @@
-// src/services/notesService.ts
-
 import type { Note, NoteForm } from "@/types/notes";
 
 import { API_BASE_URL } from "..";
