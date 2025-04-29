@@ -28,7 +28,7 @@ notesRoute.get("/:id", async (c) => {
 
 notesRoute.post("/", async (c) => {
   const body = await c.req.json();
-  if (!body.title || !body.content) {
+  if (!body.title) {
     return c.text("Missing title or content", 400);
   }
   const created = await notesService.createNote({

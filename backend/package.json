@@ -4,6 +4,7 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "drizzle-orm": "^0.42.0",
     "hono": "^4.7.7",
     "postgres": "^3.4.5"
@@ -13,4 +14,3 @@
     "drizzle-kit": "^0.31.0"
   }
 }
-

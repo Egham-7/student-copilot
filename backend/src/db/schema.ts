@@ -2,7 +2,6 @@ import {
   pgTable,
   serial,
   text,
-  integer,
   timestamp,
   vector,
   index,
@@ -24,10 +23,15 @@ export const notes = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [index("idx_notes_embedding").on(table.embedding)],
+  (table) => [
+    index("idx_notes_embedding").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
+    ),
+  ],
 );
 
-// Knowledge Artifacts table (no noteId)
+// Knowledge Artifacts table
 export const knowledgeArtifacts = pgTable(
   "knowledge_artifacts",
   {
@@ -43,5 +47,10 @@ export const knowledgeArtifacts = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [index("idx_knowledge_artifacts_embedding").on(table.embedding)],
+  (table) => [
+    index("idx_knowledge_artifacts_embedding").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
+    ),
+  ],
 );

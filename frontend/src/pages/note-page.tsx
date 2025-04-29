@@ -1,37 +1,54 @@
-import { useCallback, useEffect } from "react";
-import { SaveIcon, FileIcon } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import "@blocknote/core/fonts/inter.css";
-import { useCreateBlockNote } from "@blocknote/react";
-import "@blocknote/mantine/style.css";
-import { useParams } from "@tanstack/react-router";
-import { useNote } from "@/hooks/notes/use-note";
-import { useUpdateNote } from "@/hooks/notes/use-update-note";
-import { SkeletonItem } from "@/components/skeleton-item";
-import { ErrorState } from "@/components/error-display";
-import { useHotkeys, useDebouncedCallback } from "@mantine/hooks";
-import { useToast } from "@/hooks/use-toast";
-import { BlockNoteView } from "@blocknote/mantine";
+import { useCallback, useEffect } from 'react';
+import '@blocknote/core/fonts/inter.css';
+import { useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/mantine/style.css';
+import {
+  getDefaultReactSlashMenuItems,
+  SuggestionMenuController,
+  DefaultReactSuggestionItem,
+} from '@blocknote/react';
+import { filterSuggestionItems, BlockNoteEditor } from '@blocknote/core';
+import { ImMagicWand } from 'react-icons/im';
+import { useParams } from '@tanstack/react-router';
+import { useNote } from '@/hooks/notes/use-note';
+import { useUpdateNote } from '@/hooks/notes/use-update-note';
+import { SkeletonItem } from '@/components/skeleton-item';
+import { ErrorState } from '@/components/error-display';
+import { useHotkeys, useDebouncedCallback } from '@mantine/hooks';
+import { useToast } from '@/hooks/use-toast';
+import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 
 export default function NotePage() {
-  const { noteId } = useParams({ from: "/_notes/$noteId/" });
-  const { data: note, isLoading, isError, refetch } = useNote(Number(noteId));
-  const { mutateAsync: updateNote, isPending: isSaving } = useUpdateNote();
+  const { noteId } = useParams({ from: '/_notes/$noteId/' });
+  const {
+    data: note,
+    isLoading: isNoteLoading,
+    isError: isNoteError,
+    refetch,
+    error: noteError,
+  } = useNote(Number(noteId));
+  const { mutateAsync: updateNote } = useUpdateNote();
   const { toast } = useToast();
+
+  const {
+    session,
+    isLoading: isSessionLoading,
+    error: sessionError,
+  } = useSupabaseSession();
 
   const editor = useCreateBlockNote({
     domAttributes: {
       editor: {
-        "data-unsaved": "true",
+        'data-unsaved': 'true',
       },
     },
   });
 
+  // Only replace blocks when both note and editor are ready
   useEffect(() => {
     if (note?.content && editor) {
-      const parsedContent = JSON.parse(note.content);
-      editor.replaceBlocks(editor.document, parsedContent);
+      editor.replaceBlocks(editor.document, note.content);
     }
   }, [note?.content, editor]);
 
@@ -42,25 +59,26 @@ export default function NotePage() {
       await updateNote({
         id: note.id,
         title: note.title,
-        content: JSON.stringify(editor.document),
+        content: editor.document,
+        userId: session?.user.id!,
       });
 
       toast({
-        title: "Saved successfully",
+        title: 'Saved successfully',
       });
     } catch (error) {
       toast({
-        title: "Failed to save",
-        variant: "destructive",
+        title: 'Failed to save',
+        variant: 'destructive',
       });
     }
-  }, [editor, note, updateNote, toast]);
+  }, [editor, note, updateNote, toast, session]);
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
 
   useHotkeys([
     [
-      "mod+S",
+      'mod+S',
       (e) => {
         e.preventDefault();
         saveNote();
@@ -68,51 +86,77 @@ export default function NotePage() {
     ],
   ]);
 
-  if (isLoading) return <SkeletonItem count={5} />;
-  if (isError)
-    return (
-      <ErrorState message="Failed to load note" onRetry={() => refetch()} />
-    );
+  // --- Custom Slash Menu Item (UI only) ---
+  const insertMagicItem = (
+    editor: BlockNoteEditor,
+  ): DefaultReactSuggestionItem => ({
+    title: 'Insert Magic Text',
+    onItemClick: () => {
+      editor.insertInlineContent('✨ Magic AI text goes here! ✨');
+    },
+    aliases: ['autocomplete', 'ai'],
+    group: 'AI',
+    icon: <ImMagicWand size={18} />,
+    subtext: 'Continue your note with AI-generated text',
+  });
 
-  const hasUnsavedChanges =
-    editor.document !== JSON.parse(note?.content || "[]");
+  // Combine with default Slash Menu items
+  const getCustomSlashMenuItems = (
+    editor: BlockNoteEditor,
+  ): DefaultReactSuggestionItem[] => [
+    ...getDefaultReactSlashMenuItems(editor),
+    insertMagicItem(editor),
+  ];
+
+  // Handle loading and error states
+  if (isSessionLoading || isNoteLoading) {
+    return <SkeletonItem count={5} />;
+  }
+
+  if (sessionError) {
+    return (
+      <ErrorState
+        message={`Authentication error: ${sessionError.message}`}
+        onRetry={refetch}
+      />
+    );
+  }
+
+  if (isNoteError) {
+    return (
+      <ErrorState
+        message={`Failed to load note: ${noteError?.message ?? ''}`}
+        onRetry={refetch}
+      />
+    );
+  }
+
+  if (!session) {
+    return (
+      <ErrorState
+        message="You must be logged in to view this note."
+        onRetry={refetch}
+      />
+    );
+  }
+
+  if (!note) {
+    return <ErrorState message="Note not found." onRetry={refetch} />;
+  }
 
   return (
-    <Card className="border-none shadow-none p-0 rounded-none">
-      <CardHeader className="space-y-4 pb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <FileIcon className="h-5 w-5 text-primary" />
-            <h1 className="text-2xl font-semibold text-foreground">
-              {note?.title}
-            </h1>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-muted-foreground"
-            onClick={saveNote}
-            disabled={!hasUnsavedChanges}
-          >
-            <SaveIcon
-              className={`h-4 w-4 mr-2 ${isSaving ? "animate-spin" : ""}`}
-            />
-            {isSaving
-              ? "Saving..."
-              : hasUnsavedChanges
-                ? "Save changes"
-                : "Saved"}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <BlockNoteView
-          editor={editor}
-          theme="light"
-          onChange={debouncedSave}
-          className="min-h-[calc(100vh-12rem)] rounded-lg border border-border bg-card p-4"
-        />
-      </CardContent>
-    </Card>
+    <BlockNoteView
+      className="w-full min-h-screen"
+      editor={editor}
+      slashMenu={false}
+      onChange={debouncedSave}
+    >
+      <SuggestionMenuController
+        triggerCharacter={'/'}
+        getItems={async (query: string) =>
+          filterSuggestionItems(getCustomSlashMenuItems(editor), query)
+        }
+      />
+    </BlockNoteView>
   );
 }

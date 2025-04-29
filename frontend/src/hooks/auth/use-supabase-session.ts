@@ -1,33 +1,47 @@
-// hooks/useSupabaseSession.ts
-import { useState, useEffect } from "react";
-import { Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { useState, useEffect } from 'react';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
-export function useSupabaseSession() {
+type UseSupabaseSessionResult = {
+  session: Session | null;
+  isLoading: boolean;
+  error: Error | null;
+};
+
+export function useSupabaseSession(): UseSupabaseSessionResult {
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    // Use async/await for initial session fetch
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (isMounted) setSession(data.session);
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (isMounted) {
+          setSession(data.session);
+          setError(error ? new Error(error.message) : null);
+        }
+      } catch (err) {
+        if (isMounted) setError(err as Error);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
     })();
 
-    // Listen for auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (isMounted) setSession(session);
     });
 
-    // Cleanup on unmount
     return () => {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
-  return session;
+  return { session, isLoading, error };
 }

@@ -1,18 +1,23 @@
-import { useEffect } from "react";
-import { useSupabaseSession } from "@/hooks/auth/use-supabase-session"; // adjust as needed
-import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from 'react';
+import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
+import { useNavigate } from '@tanstack/react-router';
 
 export function Protected({ children }: { children: React.ReactNode }) {
-  const session = useSupabaseSession();
+  const { session, isLoading, error } = useSupabaseSession();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session === null) {
-      navigate({ to: "/login" });
+    if (!isLoading && !session) {
+      navigate({ to: '/login' });
     }
-  }, [session, navigate]);
+  }, [isLoading, session, navigate]);
 
-  if (!session) return null; // or a loading spinner
+  if (isLoading) return <div>Loading...</div>; // or your spinner component
+  if (error) return <div>Error: {error.message}</div>;
+
+  // Optionally, you could return null here, but if session is null and not loading,
+  // the redirect will happen, so this is safe.
+  if (!session) return null;
 
   return <>{children}</>;
 }
