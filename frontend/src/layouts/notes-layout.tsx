@@ -1,9 +1,9 @@
-import { Outlet, useNavigate } from "@tanstack/react-router";
-import { NotesSidebar } from "@/components/notes-sidebar";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
-import { useEffect } from "react";
-import { Protected } from "./protected-layout";
+import { Outlet, useNavigate } from '@tanstack/react-router';
+import { NotesSidebar } from '@/components/notes-sidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
+import { useEffect } from 'react';
+import { Protected } from './protected-layout';
 
 export function NotesLayout() {
   const session = useSupabaseSession();
@@ -11,7 +11,7 @@ export function NotesLayout() {
 
   useEffect(() => {
     if (session === null) {
-      navigate({ to: "/login" });
+      navigate({ to: '/login' });
     }
     // If session is truthy, do nothing (render children)
   }, [session, navigate]);
@@ -22,8 +22,10 @@ export function NotesLayout() {
     <Protected>
       <div className="flex h-screen w-screen">
         <NotesSidebar />
-        <main className="flex-1 overflow-auto bg-background">
-          <SidebarTrigger />
+        <main className="relative flex-1 overflow-auto bg-background">
+          <div className="absolute top-2 z-50">
+            <SidebarTrigger />
+          </div>
           <Outlet />
         </main>
       </div>

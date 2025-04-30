@@ -6,6 +6,7 @@ import {
   vector,
   index,
   jsonb,
+  integer,
 } from "drizzle-orm/pg-core";
 
 // Notes table
@@ -52,5 +53,22 @@ export const knowledgeArtifacts = pgTable(
       "hnsw",
       table.embedding.op("vector_cosine_ops"),
     ),
+  ],
+);
+
+// Join table for many-to-many relationship
+export const notesToKnowledgeArtifacts = pgTable(
+  "notes_to_knowledge_artifacts",
+  {
+    noteId: integer("note_id")
+      .notNull()
+      .references(() => notes.id, { onDelete: "cascade" }),
+    artifactId: integer("artifact_id")
+      .notNull()
+      .references(() => knowledgeArtifacts.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    index("idx_notes_to_knowledge_artifacts_note_id").on(table.noteId),
+    index("idx_notes_to_knowledge_artifacts_artifact_id").on(table.artifactId),
   ],
 );

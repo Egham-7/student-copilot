@@ -15,9 +15,10 @@ import { useNote } from '@/hooks/notes/use-note';
 import { useUpdateNote } from '@/hooks/notes/use-update-note';
 import { SkeletonItem } from '@/components/skeleton-item';
 import { ErrorState } from '@/components/error-display';
-import { useHotkeys, useDebouncedCallback } from '@mantine/hooks';
+import { useHotkeys } from '@mantine/hooks';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
+import { NoteChat } from '@/components/notes/note-chat';
 
 export default function NotePage() {
   const { noteId } = useParams({ from: '/_notes/$noteId/' });
@@ -37,13 +38,7 @@ export default function NotePage() {
     error: sessionError,
   } = useSupabaseSession();
 
-  const editor = useCreateBlockNote({
-    domAttributes: {
-      editor: {
-        'data-unsaved': 'true',
-      },
-    },
-  });
+  const editor = useCreateBlockNote({});
 
   // Only replace blocks when both note and editor are ready
   useEffect(() => {
@@ -73,8 +68,6 @@ export default function NotePage() {
       });
     }
   }, [editor, note, updateNote, toast, session]);
-
-  const debouncedSave = useDebouncedCallback(saveNote, 1000);
 
   useHotkeys([
     [
@@ -145,18 +138,20 @@ export default function NotePage() {
   }
 
   return (
-    <BlockNoteView
-      className="w-full min-h-screen"
-      editor={editor}
-      slashMenu={false}
-      onChange={debouncedSave}
-    >
-      <SuggestionMenuController
-        triggerCharacter={'/'}
-        getItems={async (query: string) =>
-          filterSuggestionItems(getCustomSlashMenuItems(editor), query)
-        }
-      />
-    </BlockNoteView>
+    <div className="flex flex-col items-center justify-center w-full h-full">
+      <BlockNoteView
+        className="w-full h-full "
+        editor={editor}
+        slashMenu={false}
+      >
+        <SuggestionMenuController
+          triggerCharacter={'/'}
+          getItems={async (query: string) =>
+            filterSuggestionItems(getCustomSlashMenuItems(editor), query)
+          }
+        />
+      </BlockNoteView>
+      <NoteChat />
+    </div>
   );
 }

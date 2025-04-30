@@ -7,7 +7,6 @@ export type KnowledgeArtifact = {
   createdAt: string;
   updatedAt: string;
   userId: string;
-  noteId?: string;
 };
 
 // For creating a new artifact

@@ -1,17 +1,28 @@
 // src/modules/notes/notes.service.ts
+import { KnowledgeArtifactsRepository } from "../knowledge-artifacts/repository";
 import { NotesRepository } from "./repository";
 
 export class NotesService {
-  constructor(private repo: NotesRepository) {}
+  constructor(
+    private repo: NotesRepository,
+    private knowledge_artifacts_repo: KnowledgeArtifactsRepository,
+  ) {}
 
   async getAllNotes() {
     return this.repo.findAll();
   }
 
   async getNoteById(id: number) {
-    const note = await this.repo.findById(id);
-    if (!note.length) throw new Error("Note not found");
-    return note[0];
+    const noteResult = await this.repo.findById(id);
+    if (!noteResult.length) throw new Error("Note not found");
+    const note = noteResult[0];
+
+    const artifacts = await this.knowledge_artifacts_repo.findAllByNoteId(id);
+
+    return {
+      ...note,
+      artifacts,
+    };
   }
 
   async createNote(data: any) {
@@ -29,5 +40,12 @@ export class NotesService {
     const [deleted] = await this.repo.delete(id);
     if (!deleted) throw new Error("Note not found");
     return deleted;
+  }
+
+  async linkToArtifacts(noteId: number, artifactIds: number[]) {
+    const [linked] = await this.repo.linkToArtifacts(noteId, artifactIds);
+    if (!linked) throw new Error("Linking failed");
+
+    return linked;
   }
 }

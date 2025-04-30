@@ -25,4 +25,8 @@ export class KnowledgeArtifactsService {
     if (!deleted) throw new Error("Knowledge Artifact not found");
     return deleted;
   }
+
+  async findAllByNoteId(noteId: number) {
+    return this.repo.findAllByNoteId(noteId);
+  }
 }

@@ -2,9 +2,11 @@
 import { Hono } from "hono";
 import { NotesRepository } from "./repository";
 import { NotesService } from "./service";
+import { KnowledgeArtifactsRepository } from "../knowledge-artifacts/repository";
 
 const notesRepo = new NotesRepository();
-const notesService = new NotesService(notesRepo);
+const knowledgeArtifactsRepo = new KnowledgeArtifactsRepository();
+const notesService = new NotesService(notesRepo, knowledgeArtifactsRepo);
 
 const notesRoute = new Hono();
 
@@ -62,6 +64,21 @@ notesRoute.delete("/:id", async (c) => {
     if (isNaN(id)) return c.text("Invalid ID", 400);
     const deleted = await notesService.deleteNote(id);
     return c.json(deleted);
+  } catch (e: any) {
+    return c.text(e.message, 404);
+  }
+});
+
+notesRoute.post("/:id/link", async (c) => {
+  try {
+    const id = Number(c.req.param("id"));
+    if (isNaN(id)) return c.text("Invalid ID", 400);
+    const body = await c.req.json();
+    const artifactIds = body.artifactIds;
+
+    const linked = await notesService.linkToArtifacts(id, artifactIds);
+
+    return c.json(linked);
   } catch (e: any) {
     return c.text(e.message, 404);
   }
