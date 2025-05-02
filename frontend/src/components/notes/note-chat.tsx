@@ -95,7 +95,7 @@ export function NoteChat() {
       <PopoverContent
         className={cn(
           'p-0 border-none bg-transparent w-full shadow-none max-w-full',
-          ' !left-1/2 !top-3/4 !-translate-x-1/3  z-[60]',
+          ' left-1/2! top-3/4! -translate-x-1/3!  z-60',
         )}
         sideOffset={0}
         align="center"
@@ -151,7 +151,7 @@ export function NoteChat() {
                     <FormItem className="flex-1">
                       <FormControl>
                         <Input
-                          className="bg-transparent outline-none text-base placeholder:text-muted-foreground"
+                          className="bg-transparent outline-hidden text-base placeholder:text-muted-foreground"
                           placeholder="Write something..."
                           autoComplete="off"
                           {...field}
