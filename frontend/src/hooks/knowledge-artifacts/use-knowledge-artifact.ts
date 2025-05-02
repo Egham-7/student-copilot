@@ -4,7 +4,7 @@ import { knowledgeArtifactsService } from '@/services/knowledge-artifacts';
 
 export function useKnowledgeArtifact(id: number) {
   return useQuery<KnowledgeArtifact>({
-    queryKey: ['knowledge-artifact', id],
+    queryKey: ['knowledge-artifacts', id],
     queryFn: () => knowledgeArtifactsService.getById(id),
     enabled: !!id,
   });

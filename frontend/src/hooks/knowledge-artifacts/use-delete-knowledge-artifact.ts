@@ -4,7 +4,7 @@ import { useSupabaseSession } from '../auth/use-supabase-session';
 
 export function useDeleteKnowledgeArtifact() {
   const queryClient = useQueryClient();
-  const session = useSupabaseSession();
+  const { session } = useSupabaseSession();
   return useMutation({
     mutationFn: (id: number) => knowledgeArtifactsService.delete(id),
     onSuccess: () => {

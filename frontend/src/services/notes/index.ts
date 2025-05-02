@@ -45,4 +45,17 @@ export const notesService = {
     if (!res.ok) throw new Error('Failed to delete note');
     return res.json();
   },
+
+  async linkToArtifacts(id: number, artifactIds: number[]): Promise<Note> {
+    const res = await fetch(`${NOTES_BASE}/${id}/link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artifactIds }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to link note to artifacts');
+    }
+    return res.json();
+  },
 };

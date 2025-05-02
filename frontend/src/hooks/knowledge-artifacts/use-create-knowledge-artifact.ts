@@ -9,7 +9,7 @@ export function useCreateKnowledgeArtifact() {
       knowledgeArtifactsService.create(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['knowledge-artifact', data.userId],
+        queryKey: ['knowledge-artifacts', data.userId],
       });
     },
   });
