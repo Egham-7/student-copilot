@@ -1,5 +1,6 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { notesService } from '@/services/notes';
+import { toast } from 'sonner';
 
 export function useLinkKnowledgeArtifacts(noteId: number) {
   const queryClient = useQueryClient();
@@ -15,6 +16,10 @@ export function useLinkKnowledgeArtifacts(noteId: number) {
           queryKey: ['knowledge-artifacts', artifactId],
         });
       });
+    },
+
+    onError(error) {
+      toast.error(error.message);
     },
   });
 }

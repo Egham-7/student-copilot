@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { KnowledgeArtifactCreate } from '@/types/knowledge-artifacts';
 import { knowledgeArtifactsService } from '@/services/knowledge-artifacts';
+import { toast } from 'sonner';
 
 export function useUpdateKnowledgeArtifact() {
   const queryClient = useQueryClient();
@@ -14,6 +15,9 @@ export function useUpdateKnowledgeArtifact() {
       queryClient.invalidateQueries({
         queryKey: ['knowledge-artifacts', variables.id],
       });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 }

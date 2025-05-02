@@ -50,23 +50,16 @@ export default function NotePage() {
   const saveNote = useCallback(async () => {
     if (!editor || !note) return;
 
-    try {
-      await updateNote({
-        id: note.id,
-        title: note.title,
-        content: editor.document,
-        userId: session?.user.id!,
-      });
+    await updateNote({
+      id: note.id,
+      title: note.title,
+      content: editor.document,
+      userId: session?.user.id ?? '',
+    });
 
-      toast({
-        title: 'Saved successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to save',
-        variant: 'destructive',
-      });
-    }
+    toast({
+      title: 'Saved successfully',
+    });
   }, [editor, note, updateNote, toast, session]);
 
   useHotkeys([
