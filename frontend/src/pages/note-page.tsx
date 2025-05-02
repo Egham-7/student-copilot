@@ -19,6 +19,7 @@ import { useHotkeys } from '@mantine/hooks';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 import { NoteChat } from '@/components/notes/note-chat';
+import { NoteHeader } from '@/components/notes/note-header';
 
 export default function NotePage() {
   const { noteId } = useParams({ from: '/_notes/$noteId/' });
@@ -131,7 +132,8 @@ export default function NotePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full">
+    <div className="flex flex-col py-6 px-2 items-center justify-center w-full h-full">
+      <NoteHeader title={note.title} lastEdited={new Date(note.updatedAt)} />
       <BlockNoteView
         className="w-full h-full "
         editor={editor}

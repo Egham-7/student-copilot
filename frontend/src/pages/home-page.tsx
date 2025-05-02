@@ -1,28 +1,36 @@
-import { useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useNotes } from "@/hooks/notes/use-notes";
-import { SkeletonItem } from "@/components/skeleton-item";
-import { ErrorState } from "@/components/error-display";
-import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
+import { useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useNotes } from '@/hooks/notes/use-notes';
+import { SkeletonItem } from '@/components/skeleton-item';
+import { ErrorState } from '@/components/error-display';
+import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { data: notes, isLoading, isError, refetch } = useNotes();
-  const session = useSupabaseSession();
+  const {
+    data: notes,
+    isLoading: isNotesLoading,
+    isError,
+    refetch,
+  } = useNotes();
+  const { session, isLoading: isSessionLoading } = useSupabaseSession();
+
+  const isLoading = isNotesLoading || isSessionLoading;
 
   useEffect(() => {
-    if (!session) {
+    if (!session && !isLoading) {
+      navigate({ to: '/login' });
     }
     if (notes && notes.length > 0) {
       navigate({
-        to: "/$noteId",
+        to: '/$noteId',
         params: {
           noteId: notes[0].id.toString(),
         },
       });
     } else if (notes && notes.length === 0) {
       navigate({
-        to: "/create",
+        to: '/create',
       });
     }
   }, [notes, navigate]);
@@ -52,8 +60,8 @@ const HomePage = () => {
     <div className="flex items-center justify-center h-screen text-muted-foreground">
       <h1 className="text-xl font-semibold">
         {notes?.length === 0
-          ? "No notes found"
-          : "Redirecting to your notes..."}
+          ? 'No notes found'
+          : 'Redirecting to your notes...'}
       </h1>
     </div>
   );

@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
@@ -11,9 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
+} from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -21,11 +21,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { supabase } from "@/lib/supabase";
+} from '@/components/ui/form';
+import { supabase } from '@/lib/supabase';
 // Form schema with zod
 const formSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email('Please enter a valid email address'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
@@ -52,15 +52,21 @@ export default function ForgotPasswordPage() {
 
       // Set success message in local state
       setSuccessMessage(
-        "Password reset instructions have been sent to your email.",
+        'Password reset instructions have been sent to your email.',
       );
 
       form.reset({}, { keepValues: false, keepIsSubmitSuccessful: true });
     } catch (error) {
-      // Set form-level error
-      form.setError("root", {
-        type: "manual",
-        message: "Failed to send reset instructions. Please try again.",
+      if (error instanceof Error) {
+        form.setError('root', {
+          type: 'manual',
+          message: error.message,
+        });
+        return;
+      }
+      form.setError('root', {
+        type: 'manual',
+        message: 'An error occurred while sending the email.',
       });
     }
   };
@@ -78,8 +84,8 @@ export default function ForgotPasswordPage() {
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Forgot Password</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you instructions to reset
-            your password.
+            Enter your email address and we&apos;ll send you instructions to
+            reset your password.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -128,7 +134,7 @@ export default function ForgotPasswordPage() {
                       Sending Instructions
                     </>
                   ) : (
-                    "Reset Password"
+                    'Reset Password'
                   )}
                 </Button>
               </form>

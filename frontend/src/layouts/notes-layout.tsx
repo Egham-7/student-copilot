@@ -1,6 +1,5 @@
 import { Outlet, useNavigate } from '@tanstack/react-router';
 import { NotesSidebar } from '@/components/notes-sidebar';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 import { useEffect } from 'react';
 import { Protected } from './protected-layout';
@@ -23,9 +22,6 @@ export function NotesLayout() {
       <div className="flex h-screen w-screen">
         <NotesSidebar />
         <main className="relative flex-1 overflow-auto bg-background">
-          <div className="absolute top-2 z-50">
-            <SidebarTrigger />
-          </div>
           <Outlet />
         </main>
       </div>
