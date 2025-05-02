@@ -1,6 +1,7 @@
-import { db } from "@/db";
-import { notes, notesToKnowledgeArtifacts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { db } from '@/db';
+import { notes, notesToKnowledgeArtifacts } from '@/db/schema';
+import { NewNote, UpdateNote } from '@/types/notes';
+import { eq } from 'drizzle-orm';
 
 export class NotesRepository {
   async findAll() {
@@ -11,11 +12,11 @@ export class NotesRepository {
     return db.select().from(notes).where(eq(notes.id, id));
   }
 
-  async create(data: any) {
+  async create(data: NewNote) {
     return db.insert(notes).values(data).returning();
   }
 
-  async update(id: number, data: any) {
+  async update(id: number, data: UpdateNote) {
     return db.update(notes).set(data).where(eq(notes.id, id)).returning();
   }
 
@@ -26,7 +27,7 @@ export class NotesRepository {
   async linkToArtifacts(noteId: number, artifactIds: number[]) {
     if (!artifactIds.length) return [];
 
-    const values = artifactIds.map((artifactId) => ({
+    const values = artifactIds.map(artifactId => ({
       noteId,
       artifactId,
     }));

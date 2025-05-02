@@ -1,23 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2020", // Modern JS output
-    "module": "esnext", // ESM modules
-    "moduleResolution": "node", // Node-style module resolution
-    "strict": true, // All strict type-checking options
-    "esModuleInterop": true, // Allow default imports from CJS modules
-    "forceConsistentCasingInFileNames": true, // Enforce consistent file naming
-    "skipLibCheck": true, // Skip type checking of declaration files
-    "outDir": "dist", // Output directory for compiled files
-    "rootDir": "src", // Root directory of your source files
-    "lib": ["esnext", "dom"], // Include modern JS and DOM types
-    "jsx": "react-jsx", // JSX transform for Hono
-    "jsxImportSource": "hono/jsx", // Use Hono's JSX runtime
-    "resolveJsonModule": true, // Allow importing .json files
-    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+      "@/*": ["src/*"]
+    },
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "types": ["node"],
+    "lib": ["esnext"]
+  }
 }

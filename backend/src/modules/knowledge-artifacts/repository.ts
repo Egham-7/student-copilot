@@ -1,6 +1,7 @@
-import { db } from "@/db";
-import { knowledgeArtifacts, notesToKnowledgeArtifacts } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { db } from '@/db';
+import { knowledgeArtifacts, notesToKnowledgeArtifacts } from '@/db/schema';
+import { NewKnowledgeArtifact, UpdateKnowledgeArtifact } from '@/types/knowledge-artifacts';
+import { eq, inArray } from 'drizzle-orm';
 
 export class KnowledgeArtifactsRepository {
   async findAll() {
@@ -8,29 +9,19 @@ export class KnowledgeArtifactsRepository {
   }
 
   async findById(id: number) {
-    return db
-      .select()
-      .from(knowledgeArtifacts)
-      .where(eq(knowledgeArtifacts.id, id));
+    return db.select().from(knowledgeArtifacts).where(eq(knowledgeArtifacts.id, id));
   }
 
-  async create(data: any) {
+  async create(data: NewKnowledgeArtifact) {
     return db.insert(knowledgeArtifacts).values(data).returning();
   }
 
-  async update(id: number, data: any) {
-    return db
-      .update(knowledgeArtifacts)
-      .set(data)
-      .where(eq(knowledgeArtifacts.id, id))
-      .returning();
+  async update(id: number, data: UpdateKnowledgeArtifact) {
+    return db.update(knowledgeArtifacts).set(data).where(eq(knowledgeArtifacts.id, id)).returning();
   }
 
   async delete(id: number) {
-    return db
-      .delete(knowledgeArtifacts)
-      .where(eq(knowledgeArtifacts.id, id))
-      .returning();
+    return db.delete(knowledgeArtifacts).where(eq(knowledgeArtifacts.id, id)).returning();
   }
 
   /**
@@ -43,14 +34,11 @@ export class KnowledgeArtifactsRepository {
       .from(notesToKnowledgeArtifacts)
       .where(eq(notesToKnowledgeArtifacts.noteId, noteId));
 
-    const artifactIds = artifactLinks.map((link) => link.artifactId);
+    const artifactIds = artifactLinks.map(link => link.artifactId);
 
     // 2. Get the artifacts
     if (artifactIds.length === 0) return [];
 
-    return db
-      .select()
-      .from(knowledgeArtifacts)
-      .where(inArray(knowledgeArtifacts.id, artifactIds));
+    return db.select().from(knowledgeArtifacts).where(inArray(knowledgeArtifacts.id, artifactIds));
   }
 }
