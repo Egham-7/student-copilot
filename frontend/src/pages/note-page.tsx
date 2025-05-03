@@ -133,7 +133,11 @@ export default function NotePage() {
 
   return (
     <div className="flex flex-col py-6 px-2 items-center justify-center w-full h-full">
-      <NoteHeader title={note.title} lastEdited={new Date(note.updatedAt)} />
+      <NoteHeader
+        title={note.title}
+        lastEdited={new Date(note.updatedAt)}
+        artifacts={note.artifacts}
+      />
       <BlockNoteView
         className="w-full h-full "
         editor={editor}

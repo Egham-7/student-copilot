@@ -11,13 +11,16 @@ import { MoreHorizontal, MessageCircle, Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { SidebarTrigger } from '../ui/sidebar';
 import { AddArtifactDialog } from './note-header/add-artifact-dialog';
+import { KnowledgeArtifact } from '@/types/knowledge-artifacts';
+import { ArtifactList } from './note-header/artifact-list';
 
 interface NoteHeaderProps {
   title: string;
   lastEdited: Date;
+  artifacts: KnowledgeArtifact[];
 }
 
-export function NoteHeader({ title, lastEdited }: NoteHeaderProps) {
+export function NoteHeader({ title, lastEdited, artifacts }: NoteHeaderProps) {
   const timeAgo = formatDistanceToNow(lastEdited, { addSuffix: true });
   const fullDate = format(lastEdited, 'PPpp');
 
@@ -52,6 +55,7 @@ export function NoteHeader({ title, lastEdited }: NoteHeaderProps) {
         <Button variant="ghost" size="icon" className="hover:text-foreground">
           <MoreHorizontal className="w-4 h-4" />
         </Button>
+        <ArtifactList artifacts={artifacts} />
       </div>
     </div>
   );
