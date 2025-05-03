@@ -19,25 +19,28 @@ artifactsRoute.get('/:id', async c => {
     const artifact = await service.getById(id);
     return c.json(artifact);
   } catch (e) {
-    if (e instanceof Error) {
-      return c.text(e.message, 404);
-    }
-    return c.text('An internal server error occurred.', 500);
+    return c.text(e instanceof Error ? e.message : 'Internal server error', 404);
   }
 });
 
 artifactsRoute.post('/', async c => {
   const body = await c.req.json();
-  if (!body.title || !body.content || !body.filePath) {
-    return c.text('Missing title, content, or filePath', 400);
+  const { title, filePath, fileType } = body;
+
+  if (!title || !filePath || !fileType) {
+    return c.text('Missing title, filePath, or fileType', 400);
   }
-  const created = await service.create({
-    title: body.title,
-    content: body.content,
-    filePath: body.filePath,
-    embedding: body.embedding ?? null,
-  });
-  return c.json(created, 201);
+
+  try {
+    const created = await service.create({
+      title,
+      filePath,
+      fileType,
+    });
+    return c.json(created, 201);
+  } catch (e) {
+    return c.text(e instanceof Error ? e.message : 'Failed to create artifact', 500);
+  }
 });
 
 artifactsRoute.put('/:id', async c => {
@@ -47,17 +50,14 @@ artifactsRoute.put('/:id', async c => {
     const body = await c.req.json();
     const updated = await service.update(id, {
       title: body.title,
-      content: body.content,
       filePath: body.filePath,
       embedding: body.embedding,
+      fileType: body.fileType,
       updatedAt: new Date(),
     });
     return c.json(updated);
   } catch (e) {
-    if (e instanceof Error) {
-      return c.text(e.message, 404);
-    }
-    return c.text('An internal server error occurred.', 500);
+    return c.text(e instanceof Error ? e.message : 'Internal server error', 500);
   }
 });
 
@@ -68,10 +68,7 @@ artifactsRoute.delete('/:id', async c => {
     const deleted = await service.delete(id);
     return c.json(deleted);
   } catch (e) {
-    if (e instanceof Error) {
-      return c.text(e.message, 404);
-    }
-    return c.text('An internal server error occurred.', 500);
+    return c.text(e instanceof Error ? e.message : 'Internal server error', 500);
   }
 });
 
