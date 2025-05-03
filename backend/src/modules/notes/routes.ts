@@ -33,11 +33,11 @@ notesRoute.post('/', async c => {
   if (!body.title) {
     return c.text('Missing title or content', 400);
   }
-  
+
   const created = await notesService.createNote({
     title: body.title,
     content: body.content,
-    embedding: body.embedding ?? null,
+    userId: body.userId,
   });
   return c.json(created, 201);
 });

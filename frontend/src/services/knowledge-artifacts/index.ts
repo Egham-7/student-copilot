@@ -62,4 +62,17 @@ export const knowledgeArtifactsService = {
     if (!res.ok) throw new Error('Failed to fetch artifacts by note');
     return res.json();
   },
+
+  async presignUploadUrl(params: {
+    key: string;
+    contentType: string;
+  }): Promise<{ url: string }> {
+    const res = await fetch(`${ARTIFACTS_BASE}/presign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) throw new Error('Failed to generate presigned URL');
+    return res.json();
+  },
 };

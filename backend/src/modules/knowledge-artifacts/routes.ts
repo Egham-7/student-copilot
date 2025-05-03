@@ -1,9 +1,17 @@
 import { Hono } from 'hono';
 import { KnowledgeArtifactsRepository } from './repository';
 import { KnowledgeArtifactsService } from './service';
+import { S3Client } from 'bun';
 
 const repo = new KnowledgeArtifactsRepository();
 const service = new KnowledgeArtifactsService(repo);
+
+const s3 = new S3Client({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+  bucket: process.env.S3_BUCKET!,
+  endpoint: process.env.S3_ENDPOINT!,
+});
 
 const artifactsRoute = new Hono();
 
@@ -25,7 +33,7 @@ artifactsRoute.get('/:id', async c => {
 
 artifactsRoute.post('/', async c => {
   const body = await c.req.json();
-  const { title, filePath, fileType } = body;
+  const { title, filePath, fileType, userId } = body;
 
   if (!title || !filePath || !fileType) {
     return c.text('Missing title, filePath, or fileType', 400);
@@ -36,6 +44,7 @@ artifactsRoute.post('/', async c => {
       title,
       filePath,
       fileType,
+      userId,
     });
     return c.json(created, 201);
   } catch (e) {
@@ -69,6 +78,21 @@ artifactsRoute.delete('/:id', async c => {
   } catch (e) {
     return c.text(e instanceof Error ? e.message : 'Internal server error', 500);
   }
+});
+
+artifactsRoute.post('/presign', async c => {
+  const body = await c.req.json();
+
+  const { key, contentType } = body.data;
+
+  const url = s3.file(key).presign({
+    method: 'PUT',
+    expiresIn: 60 * 15, // 15 minutes
+    type: contentType,
+    acl: 'public-read', // optional
+  });
+
+  return c.json({ url });
 });
 
 export default artifactsRoute;

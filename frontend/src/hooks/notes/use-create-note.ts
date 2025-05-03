@@ -7,11 +7,10 @@ export const useCreateNote = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ title, content, embedding, userId }: NoteCreate) => {
+    mutationFn: async ({ title, content, userId }: NoteCreate) => {
       const note = await notesService.create({
         title,
         content,
-        embedding,
         userId,
       });
       return note.id;

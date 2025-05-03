@@ -7,6 +7,7 @@ import {
   index,
   jsonb,
   integer,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 export const notes = pgTable(
@@ -18,6 +19,7 @@ export const notes = pgTable(
     embedding: vector('embedding', { dimensions: 1536 }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    userId: uuid('user_id').notNull(),
   },
   table => [index('idx_notes_embedding').using('hnsw', table.embedding.op('vector_cosine_ops'))],
 );
@@ -32,6 +34,7 @@ export const knowledgeArtifacts = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     fileType: text('file_type').notNull(),
+    userId: uuid('user_id').notNull(),
   },
   table => [
     index('idx_knowledge_artifacts_embedding').using(
