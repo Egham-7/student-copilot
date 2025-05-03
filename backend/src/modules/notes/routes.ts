@@ -1,4 +1,3 @@
-// src/modules/notes/routes.ts
 import { Hono } from 'hono';
 import { NotesRepository } from './repository';
 import { NotesService } from './service';
@@ -34,6 +33,7 @@ notesRoute.post('/', async c => {
   if (!body.title) {
     return c.text('Missing title or content', 400);
   }
+  
   const created = await notesService.createNote({
     title: body.title,
     content: body.content,

@@ -1,6 +1,8 @@
 import { NotesRepository } from './repository';
 import { KnowledgeArtifactsRepository } from '../knowledge-artifacts/repository';
 import { NewNote, UpdateNote } from '@/types/notes';
+import { embed } from 'ai';
+import { openai } from '@ai-sdk/openai';
 
 export class NotesService {
   constructor(
@@ -26,9 +28,22 @@ export class NotesService {
   }
 
   async createNote(data: NewNote) {
-    const [created] = await this.repo.create(data);
-    return created;
-  }
+  const embedding = data.content 
+    ? (await embed({
+        model: openai.embedding("text-embedding-3-small"),
+        value: data.content
+      })).embedding 
+    : null;
+
+  const noteWithEmbedding: NewNote = {
+    ...data,
+    embedding
+  };
+
+  const [created] = await this.repo.create(noteWithEmbedding);
+  return created;
+}
+
 
   async updateNote(id: number, data: UpdateNote) {
     const [updated] = await this.repo.update(id, data);
