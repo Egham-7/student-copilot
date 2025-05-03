@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -8,6 +10,7 @@ import {
 import { MoreHorizontal, MessageCircle, Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { SidebarTrigger } from '../ui/sidebar';
+import { AddArtifactDialog } from './note-header/add-artifact-dialog';
 
 interface NoteHeaderProps {
   title: string;
@@ -16,7 +19,7 @@ interface NoteHeaderProps {
 
 export function NoteHeader({ title, lastEdited }: NoteHeaderProps) {
   const timeAgo = formatDistanceToNow(lastEdited, { addSuffix: true });
-  const fullDate = format(lastEdited, 'PPpp'); // Example: Jan 2, 2024 at 5:40 PM
+  const fullDate = format(lastEdited, 'PPpp');
 
   return (
     <div className="w-full flex items-center justify-between px-4 py-2 border-b bg-background text-foreground border-border">
@@ -40,13 +43,7 @@ export function NoteHeader({ title, lastEdited }: NoteHeaderProps) {
           </Tooltip>
         </TooltipProvider>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Share
-        </Button>
+        <AddArtifactDialog />
 
         <Button variant="ghost" size="icon" className="hover:text-foreground">
           <MessageCircle className="w-4 h-4" />
