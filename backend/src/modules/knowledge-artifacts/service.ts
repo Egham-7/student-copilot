@@ -44,9 +44,37 @@ export class KnowledgeArtifactsService {
   }
 
   async update(id: number, data: UpdateKnowledgeArtifact) {
-    const [updated] = await this.repo.update(id, data);
-    if (!updated) throw new Error('Knowledge Artifact not found');
-    return updated;
+    if (!data.filePath || !data.fileType) {
+      throw new Error('Missing filePath or fileType');
+    }
+
+    const existing = await this.repo.findById(id);
+    if (!existing.length) throw new Error('Knowledge Artifact not found');
+
+    const loader = artifactLoaders[data.fileType];
+    if (!loader) throw new Error(`Unsupported file type: ${data.fileType}`);
+
+    // Re-load and re-chunk the updated file
+    const chunks = await loader.loadAndChunk(id, data.filePath);
+
+    // Recalculate aggregated embedding
+    const aggregate = chunks
+      .map(chunk => chunk.embedding)
+      .reduce((acc, emb) => acc.map((v, j) => v + emb[j] / chunks.length));
+
+    // Update artifact record with new metadata and embedding
+    const [updated] = await this.repo.update(id, {
+      title: data.title,
+      filePath: data.filePath,
+      fileType: data.fileType,
+      embedding: aggregate,
+    });
+
+    // Delete old chunks and insert new ones
+    await this.repo.deleteChunksByArtifactId(id);
+    await this.repo.createChunks(chunks);
+
+    return { ...updated, embedding: aggregate };
   }
 
   async delete(id: number) {

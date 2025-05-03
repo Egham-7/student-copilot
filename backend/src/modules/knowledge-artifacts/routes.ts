@@ -51,7 +51,6 @@ artifactsRoute.put('/:id', async c => {
     const updated = await service.update(id, {
       title: body.title,
       filePath: body.filePath,
-      embedding: body.embedding,
       fileType: body.fileType,
       updatedAt: new Date(),
     });

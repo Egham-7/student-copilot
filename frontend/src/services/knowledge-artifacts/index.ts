@@ -38,7 +38,12 @@ export const knowledgeArtifactsService = {
     const res = await fetch(`${ARTIFACTS_BASE}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        title: data.title,
+        filePath: data.filePath,
+        fileType: data.fileType,
+        updatedAt: new Date().toISOString(),
+      }),
     });
     if (!res.ok) throw new Error('Failed to update artifact');
     return res.json();
@@ -54,9 +59,7 @@ export const knowledgeArtifactsService = {
 
   async getAllByNoteId(noteId: number): Promise<KnowledgeArtifact[]> {
     const res = await fetch(`${ARTIFACTS_BASE}/note/${noteId}`);
-
-    if (!res.ok) throw new Error('Failed to fetch artifacts');
-
+    if (!res.ok) throw new Error('Failed to fetch artifacts by note');
     return res.json();
   },
 };

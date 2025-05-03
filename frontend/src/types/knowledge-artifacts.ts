@@ -1,22 +1,22 @@
-export type KnowledgeArtifact = {
-  id: number;
+export interface BaseKnowledgeArtifact {
   title: string;
-  content: string;
   filePath: string;
-  embedding?: number[] | null;
+  fileType: string;
+}
+
+export interface KnowledgeArtifact extends BaseKnowledgeArtifact {
+  id: number;
+  content: string;
+  embedding: number[];
   createdAt: string;
   updatedAt: string;
   userId: string;
-};
+}
 
-// For creating a new artifact
-export type KnowledgeArtifactCreate = Omit<
-  KnowledgeArtifact,
-  'id' | 'createdAt' | 'updatedAt'
->;
+export interface KnowledgeArtifactCreate extends BaseKnowledgeArtifact {
+  userId: string;
+}
 
-// For updating an artifact (full update, all fields except created/updated/userId required)
-export type KnowledgeArtifactUpdate = Omit<
-  KnowledgeArtifact,
-  'createdAt' | 'updatedAt' | 'userId'
->;
+export interface KnowledgeArtifactUpdate extends BaseKnowledgeArtifact {
+  id: number;
+}
