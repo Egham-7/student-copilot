@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import notesRoute from './modules/notes/routes';
 
 import { cors } from 'hono/cors';
+import artifactsRoute from './modules/knowledge-artifacts/routes';
 
 const app = new Hono();
 app.use(
@@ -16,6 +17,7 @@ app.use(
 );
 
 app.route('/notes', notesRoute);
+app.route("/knowledge-artifacts", artifactsRoute);
 
 export default {
   port: 8080,

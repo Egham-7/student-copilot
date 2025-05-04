@@ -18,9 +18,15 @@ interface NoteHeaderProps {
   title: string;
   lastEdited: Date;
   artifacts: KnowledgeArtifact[];
+  noteId: number;
 }
 
-export function NoteHeader({ title, lastEdited, artifacts }: NoteHeaderProps) {
+export function NoteHeader({
+  title,
+  lastEdited,
+  artifacts,
+  noteId,
+}: NoteHeaderProps) {
   const timeAgo = formatDistanceToNow(lastEdited, { addSuffix: true });
   const fullDate = format(lastEdited, 'PPpp');
 
@@ -46,7 +52,7 @@ export function NoteHeader({ title, lastEdited, artifacts }: NoteHeaderProps) {
           </Tooltip>
         </TooltipProvider>
 
-        <AddArtifactDialog />
+        <AddArtifactDialog noteId={noteId} />
 
         <Button variant="ghost" size="icon" className="hover:text-foreground">
           <MessageCircle className="w-4 h-4" />

@@ -4,7 +4,7 @@ import { PDFArtifactLoader } from '../artifact-loaders/services/pdf';
 import { ArtifactLoader } from '../artifact-loaders/types';
 
 const artifactLoaders: Record<string, ArtifactLoader> = {
-  pdf: new PDFArtifactLoader(),
+  "application/pdf": new PDFArtifactLoader(),
 };
 
 export class KnowledgeArtifactsService {

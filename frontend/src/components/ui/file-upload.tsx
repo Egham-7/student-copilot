@@ -4,31 +4,55 @@ import { motion } from 'motion/react';
 import { IconUpload } from '@tabler/icons-react';
 import { useDropzone } from 'react-dropzone';
 
+import { extension } from 'mime-types';
+
+type FileUploadProps = {
+  onChange: (files: File[]) => void;
+  disabled?: boolean;
+  allowedFileTypes?: string[]; // e.g., ['image/png', 'application/pdf']
+};
+
 export const FileUpload = ({
   onChange,
-}: {
-  onChange?: (files: File[]) => void;
-}) => {
+  disabled = false,
+  allowedFileTypes,
+}: FileUploadProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const accept =
+    allowedFileTypes?.reduce<Record<string, string[]>>((acc, mime) => {
+      const ext = extension(mime);
+      if (ext) acc[mime] = [`.${ext}`];
+      return acc;
+    }, {}) ?? undefined;
+
   const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    if (onChange) {
-      onChange([...files, ...newFiles]);
-    }
+    const validFiles = allowedFileTypes
+      ? newFiles.filter((f) => allowedFileTypes.includes(f.type))
+      : newFiles;
+
+    const updatedFiles = [...files, ...validFiles];
+    setFiles(updatedFiles);
+    onChange(updatedFiles);
   };
 
   const handleClick = () => {
-    fileInputRef.current?.click();
+    if (!disabled) {
+      fileInputRef.current?.click();
+    }
   };
 
   const { getRootProps, isDragActive } = useDropzone({
     multiple: false,
+    disabled,
     noClick: true,
-    onDrop: handleFileChange,
-    onDropRejected: (error) => {
-      console.log(error);
+    accept,
+    onDrop: (acceptedFiles) => {
+      if (!disabled) handleFileChange(acceptedFiles);
+    },
+    onDropRejected: (fileRejections) => {
+      if (!disabled) console.warn('Rejected:', fileRejections);
     },
   });
 
@@ -36,14 +60,21 @@ export const FileUpload = ({
     <div className="w-full" {...getRootProps()}>
       <motion.div
         onClick={handleClick}
-        whileHover="animate"
-        className="p-10 group/file block rounded-lg cursor-pointer w-full relative overflow-hidden"
+        whileHover={!disabled ? 'animate' : undefined}
+        className={cn(
+          'p-10 group/file block rounded-lg w-full relative overflow-hidden transition cursor-pointer',
+          disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
+        )}
       >
         <input
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
-          onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
+          disabled={disabled}
+          accept={allowedFileTypes?.join(',')}
+          onChange={(e) =>
+            !disabled && handleFileChange(Array.from(e.target.files || []))
+          }
           className="hidden"
         />
 
@@ -144,7 +175,7 @@ export const FileUpload = ({
               <motion.div
                 variants={secondaryVariant}
                 className="absolute opacity-0 border border-dashed border-[var(--color-ring)] inset-0 z-30 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
-              ></motion.div>
+              />
             )}
           </div>
         </div>

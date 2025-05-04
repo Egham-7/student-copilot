@@ -38,12 +38,7 @@ export const knowledgeArtifactsService = {
     const res = await fetch(`${ARTIFACTS_BASE}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: data.title,
-        filePath: data.filePath,
-        fileType: data.fileType,
-        updatedAt: new Date().toISOString(),
-      }),
+      body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error('Failed to update artifact');
     return res.json();
@@ -60,19 +55,6 @@ export const knowledgeArtifactsService = {
   async getAllByNoteId(noteId: number): Promise<KnowledgeArtifact[]> {
     const res = await fetch(`${ARTIFACTS_BASE}/note/${noteId}`);
     if (!res.ok) throw new Error('Failed to fetch artifacts by note');
-    return res.json();
-  },
-
-  async presignUploadUrl(params: {
-    key: string;
-    contentType: string;
-  }): Promise<{ url: string }> {
-    const res = await fetch(`${ARTIFACTS_BASE}/presign`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    if (!res.ok) throw new Error('Failed to generate presigned URL');
     return res.json();
   },
 };

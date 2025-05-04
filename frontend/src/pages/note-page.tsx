@@ -131,12 +131,15 @@ export default function NotePage() {
     return <ErrorState message="Note not found." onRetry={refetch} />;
   }
 
+  console.log('Artifacts: ', note.artifacts);
+
   return (
     <div className="flex flex-col py-6 px-2 items-center justify-center w-full h-full">
       <NoteHeader
         title={note.title}
         lastEdited={new Date(note.updatedAt)}
         artifacts={note.artifacts}
+        noteId={note.id}
       />
       <BlockNoteView
         className="w-full h-full "
