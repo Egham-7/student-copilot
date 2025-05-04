@@ -1,7 +1,7 @@
 import { db } from '@/db';
 import { notes, notesToKnowledgeArtifacts } from '@/db/schema';
 import { NewNote, UpdateNote } from '@/types/notes';
-import { eq } from 'drizzle-orm';
+import { eq , and, inArray} from 'drizzle-orm';
 
 export class NotesRepository {
   async findAll() {
@@ -24,7 +24,7 @@ export class NotesRepository {
     return db.delete(notes).where(eq(notes.id, id)).returning();
   }
 
-  async linkToArtifacts(noteId: number, artifactIds: number[]) {
+  async linkArtifacts(noteId: number, artifactIds: number[]) {
     if (!artifactIds.length) return [];
 
     const values = artifactIds.map(artifactId => ({
@@ -34,4 +34,21 @@ export class NotesRepository {
 
     return db.insert(notesToKnowledgeArtifacts).values(values).returning();
   }
+
+  async unlinkArtifacts(noteId: number, artifactIds: number[]) {
+  if (!artifactIds.length) return [];
+
+  return db
+    .delete(notesToKnowledgeArtifacts)
+    .where(
+      and(
+        eq(notesToKnowledgeArtifacts.noteId, noteId),
+        inArray(notesToKnowledgeArtifacts.artifactId, artifactIds)
+      )
+    )
+    .returning();
+}
+
+
+ 
 }

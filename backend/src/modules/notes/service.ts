@@ -57,10 +57,18 @@ export class NotesService {
     return deleted;
   }
 
-  async linkToArtifacts(noteId: number, artifactIds: number[]) {
-    const [linked] = await this.repo.linkToArtifacts(noteId, artifactIds);
+  async linkArtifacts(noteId: number, artifactIds: number[]) {
+    const [linked] = await this.repo.linkArtifacts(noteId, artifactIds);
     if (!linked) throw new Error('Linking failed');
 
     return linked;
+  }
+
+  async unlinkArtifacts(noteId: number, artifactIds: number[]){
+    const [unlinked] = await this.repo.unlinkArtifacts(noteId, artifactIds);
+
+    if(!unlinked) throw new Error('Unlinking failed');
+
+  return unlinked;
   }
 }

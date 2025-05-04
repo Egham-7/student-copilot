@@ -83,7 +83,7 @@ notesRoute.post('/:id/link', async c => {
     const body = await c.req.json();
     const artifactIds = body.artifactIds;
 
-    const linked = await notesService.linkToArtifacts(id, artifactIds);
+    const linked = await notesService.linkArtifacts(id, artifactIds);
 
     return c.json(linked);
   } catch (e) {
@@ -93,5 +93,27 @@ notesRoute.post('/:id/link', async c => {
     return c.text('Internal server error occurred.', 500);
   }
 });
+
+
+notesRoute.delete('/:id/link', async c => {
+  try {
+    const id = Number(c.req.param('id'));
+    if (isNaN(id)) return c.text('Invalid ID', 400);
+
+    const body = await c.req.json();
+    const artifactIds = body.artifactIds;
+
+
+    const unlinked = await notesService.unlinkArtifacts(id, artifactIds);
+
+    return c.json(unlinked);
+  } catch (e) {
+    if (e instanceof Error) {
+      return c.text(e.message, 404);
+    }
+    return c.text('Internal server error occurred.', 500);
+  }
+});
+
 
 export default notesRoute;

@@ -1,13 +1,10 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { MoreHorizontal, MessageCircle, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { SidebarTrigger } from '../ui/sidebar';
 import { AddArtifactDialog } from './note-header/add-artifact-dialog';
@@ -52,16 +49,9 @@ export function NoteHeader({
           </Tooltip>
         </TooltipProvider>
 
-        <AddArtifactDialog noteId={noteId} />
-
-        <Button variant="ghost" size="icon" className="hover:text-foreground">
-          <MessageCircle className="w-4 h-4" />
-        </Button>
-
-        <Button variant="ghost" size="icon" className="hover:text-foreground">
-          <MoreHorizontal className="w-4 h-4" />
-        </Button>
         <ArtifactList artifacts={artifacts} />
+
+        <AddArtifactDialog noteId={noteId} artifacts={artifacts} />
       </div>
     </div>
   );

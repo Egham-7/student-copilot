@@ -58,4 +58,18 @@ export const notesService = {
     }
     return res.json();
   },
+
+  async unlinkFromArtifacts(id: number, artifactIds: number[]): Promise<Note> {
+    const res = await fetch(`${NOTES_BASE}/${id}/link`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artifactIds }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to unlink artifacts from note');
+    }
+
+    return res.json();
+  },
 };
