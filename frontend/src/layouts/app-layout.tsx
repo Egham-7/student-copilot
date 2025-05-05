@@ -1,10 +1,10 @@
 import { Outlet, useNavigate } from '@tanstack/react-router';
-import { NotesSidebar } from '@/components/notes-sidebar';
+import { AppSidebar } from '@/components/app-sidebar';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 import { useEffect } from 'react';
 import { Protected } from './protected-layout';
 
-export function NotesLayout() {
+export function AppLayout() {
   const session = useSupabaseSession();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ export function NotesLayout() {
   return (
     <Protected>
       <div className="flex h-screen w-screen">
-        <NotesSidebar />
+        <AppSidebar />
         <main className="relative flex-1 overflow-auto bg-background">
           <Outlet />
         </main>

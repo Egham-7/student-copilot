@@ -23,14 +23,14 @@ const HomePage = () => {
     }
     if (notes && notes.length > 0) {
       navigate({
-        to: '/$noteId',
+        to: '/notes/$noteId',
         params: {
           noteId: notes[0].id.toString(),
         },
       });
     } else if (notes && notes.length === 0) {
       navigate({
-        to: '/create',
+        to: '/notes/create',
       });
     }
   }, [notes, navigate]);
