@@ -30,7 +30,7 @@ export const knowledgeArtifacts = pgTable(
     id: serial('id').primaryKey(),
     title: text('title').notNull(),
     filePath: text('file_path').notNull(),
-    embedding: vector('embedding', { dimensions: 1536 }),
+    embedding: vector('embedding', { dimensions: 1536 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     fileType: text('file_type').notNull(),

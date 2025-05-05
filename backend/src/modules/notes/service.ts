@@ -1,8 +1,10 @@
 import { NotesRepository } from './repository';
 import { KnowledgeArtifactsRepository } from '../knowledge-artifacts/repository';
 import { NewNote, UpdateNote } from '@/types/notes';
-import { embed } from 'ai';
+import { embed, cosineSimilarity } from 'ai';
 import { openai } from '@ai-sdk/openai';
+import { autocompleteCache } from '@/utils/cache';
+import { hash } from 'ohash';
 
 export class NotesService {
   constructor(
@@ -28,22 +30,23 @@ export class NotesService {
   }
 
   async createNote(data: NewNote) {
-  const embedding = data.content 
-    ? (await embed({
-        model: openai.embedding("text-embedding-3-small"),
-        value: data.content
-      })).embedding 
-    : null;
+    const embedding = data.content
+      ? (
+          await embed({
+            model: openai.embedding('text-embedding-3-small'),
+            value: data.content,
+          })
+        ).embedding
+      : null;
 
-  const noteWithEmbedding: NewNote = {
-    ...data,
-    embedding
-  };
+    const noteWithEmbedding: NewNote = {
+      ...data,
+      embedding,
+    };
 
-  const [created] = await this.repo.create(noteWithEmbedding);
-  return created;
-}
-
+    const [created] = await this.repo.create(noteWithEmbedding);
+    return created;
+  }
 
   async updateNote(id: number, data: UpdateNote) {
     const [updated] = await this.repo.update(id, data);
@@ -64,11 +67,49 @@ export class NotesService {
     return linked;
   }
 
-  async unlinkArtifacts(noteId: number, artifactIds: number[]){
+  async unlinkArtifacts(noteId: number, artifactIds: number[]) {
     const [unlinked] = await this.repo.unlinkArtifacts(noteId, artifactIds);
 
-    if(!unlinked) throw new Error('Unlinking failed');
+    if (!unlinked) throw new Error('Unlinking failed');
 
-  return unlinked;
+    return unlinked;
+  }
+
+  async retrieveNoteChunks(id: number): Promise<string[]> {
+    const note = await this.getNoteById(id);
+    const noteContent = note.content;
+
+    const cacheKey = `autocomplete:${id}:${hash(noteContent)}`;
+
+    const cached = autocompleteCache.get(cacheKey);
+    if (cached) return cached;
+
+    const { embedding: noteEmbedding } = await embed({
+      model: openai.embedding('text-embedding-3-small'),
+      value: noteContent,
+    });
+
+    const scoredArtifacts = note.artifacts
+      .map(artifact => ({
+        ...artifact,
+        score: cosineSimilarity(noteEmbedding, artifact.embedding),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+
+    const artifactChunks = await Promise.all(
+      scoredArtifacts.map(async artifact => {
+        const chunks = await this.knowledge_artifacts_repo.findRelevantChunksByArtifactId(
+          artifact.id,
+          noteEmbedding,
+        );
+        return chunks.map(chunk => chunk.content);
+      }),
+    );
+
+    const allChunks = artifactChunks.flat();
+    autocompleteCache.set(cacheKey, allChunks);
+
+    return allChunks;
   }
 }

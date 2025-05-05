@@ -4,7 +4,7 @@ import { PDFArtifactLoader } from '../artifact-loaders/services/pdf';
 import { ArtifactLoader } from '../artifact-loaders/types';
 
 const artifactLoaders: Record<string, ArtifactLoader> = {
-  "application/pdf": new PDFArtifactLoader(),
+  'application/pdf': new PDFArtifactLoader(),
 };
 
 export class KnowledgeArtifactsService {
@@ -75,6 +75,18 @@ export class KnowledgeArtifactsService {
     await this.repo.createChunks(chunks);
 
     return { ...updated, embedding: aggregate };
+  }
+
+  async getChunksByArtifactId(artifactId: number) {
+    const result = await this.repo.findChunksByArtifactId(artifactId);
+    if (!result.length) throw new Error('Knowledge Artifact chunks not found');
+    return result;
+  }
+
+  async findRelevantChunksByArtifactId(artifactId: number, embedding: number[]) {
+    const result = await this.repo.findRelevantChunksByArtifactId(artifactId, embedding);
+    if (!result.length) throw new Error('Knowledge Artifact chunks not found');
+    return result;
   }
 
   async delete(id: number) {

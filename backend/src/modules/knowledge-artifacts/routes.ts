@@ -5,8 +5,6 @@ import { KnowledgeArtifactsService } from './service';
 const repo = new KnowledgeArtifactsRepository();
 const service = new KnowledgeArtifactsService(repo);
 
-
-
 const artifactsRoute = new Hono();
 
 artifactsRoute.get('/', async c => {
@@ -39,6 +37,7 @@ artifactsRoute.post('/', async c => {
       filePath,
       fileType,
       userId,
+      embedding: [],
     });
     return c.json(created, 201);
   } catch (e) {
@@ -73,7 +72,5 @@ artifactsRoute.delete('/:id', async c => {
     return c.text(e instanceof Error ? e.message : 'Internal server error', 500);
   }
 });
-
-
 
 export default artifactsRoute;

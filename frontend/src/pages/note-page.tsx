@@ -22,6 +22,7 @@ import { NoteChat } from '@/components/notes/note-chat';
 import { NoteHeader } from '@/components/notes/note-header';
 import { debounce } from 'lodash';
 import { DebouncedFunc } from 'lodash';
+import { useGenerateAutoComplete } from '@/hooks/notes/use-generate-auto-complete';
 
 export default function NotePage() {
   const { noteId } = useParams({ from: '/_app/notes/$noteId/' });
@@ -42,12 +43,15 @@ export default function NotePage() {
     error: sessionError,
   } = useSupabaseSession();
 
+  const { mutateAsync: generateAutoComplete } = useGenerateAutoComplete();
+
   const noteEditor = useCreateBlockNote({
     initialContent: note?.content,
   });
 
   // Auto-save handler (debounced)
-  const debouncedSaveRef = useRef<DebouncedFunc<() => void | undefined>>(undefined);
+  const debouncedSaveRef =
+    useRef<DebouncedFunc<() => void | undefined>>(undefined);
 
   const saveNote = useCallback(async () => {
     if (!noteEditor || !note || !session) return;
@@ -95,8 +99,12 @@ export default function NotePage() {
     editor: BlockNoteEditor,
   ): DefaultReactSuggestionItem => ({
     title: 'Insert Magic Text',
-    onItemClick: () => {
-      editor.insertInlineContent('✨ Magic AI text goes here! ✨');
+    onItemClick: async () => {
+      if (!note) return;
+
+      const autoCompleteText = await generateAutoComplete(note.id);
+
+      editor.insertInlineContent(autoCompleteText);
     },
     aliases: ['autocomplete', 'ai'],
     group: 'AI',

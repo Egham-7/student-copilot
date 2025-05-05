@@ -2,6 +2,9 @@ import { Hono } from 'hono';
 import { NotesRepository } from './repository';
 import { NotesService } from './service';
 import { KnowledgeArtifactsRepository } from '../knowledge-artifacts/repository';
+import { openai } from '@ai-sdk/openai';
+import { generateText, tool } from 'ai';
+import { z } from 'zod';
 
 const notesRepo = new NotesRepository();
 const knowledgeArtifactsRepo = new KnowledgeArtifactsRepository();
@@ -94,7 +97,6 @@ notesRoute.post('/:id/link', async c => {
   }
 });
 
-
 notesRoute.delete('/:id/link', async c => {
   try {
     const id = Number(c.req.param('id'));
@@ -102,7 +104,6 @@ notesRoute.delete('/:id/link', async c => {
 
     const body = await c.req.json();
     const artifactIds = body.artifactIds;
-
 
     const unlinked = await notesService.unlinkArtifacts(id, artifactIds);
 
@@ -115,5 +116,40 @@ notesRoute.delete('/:id/link', async c => {
   }
 });
 
+notesRoute.get('/:id/autocomplete', async c => {
+  const id = Number(c.req.param('id'));
+  if (isNaN(id)) return c.text('Invalid ID', 400);
+
+  const inputPrompt = `
+You are continuing a note. Your task is to write the **next logical content chunk** based on its current state.
+
+Use the "getRelevantContext" tool to fetch relevant chunks from related knowledge artifacts for note ${id}.
+
+Write only the next chunk, without repeating or summarizing previous content. Keep the tone and style consistent with the original note.
+`;
+
+  const result = await generateText({
+    model: openai('gpt-4'),
+    tools: {
+      getRelevantContext: tool({
+        description: 'Retrieve relevant content chunks for a note',
+        parameters: z.object({
+          noteId: z.number(),
+        }),
+        execute: async ({ noteId }) => {
+          return notesService.retrieveNoteChunks(noteId);
+        },
+      }),
+    },
+    messages: [
+      {
+        role: 'user',
+        content: inputPrompt,
+      },
+    ],
+  });
+
+  return c.text(result.text);
+});
 
 export default notesRoute;

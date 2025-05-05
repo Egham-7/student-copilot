@@ -72,4 +72,14 @@ export const notesService = {
 
     return res.json();
   },
+
+  async generateAutoComplete(id: number): Promise<string> {
+    const res = await fetch(`${NOTES_BASE}/${id}/autocomplete`);
+
+    if (!res.ok) {
+      throw new Error('Failed to generate autocomplete');
+    }
+
+    return res.text();
+  },
 };

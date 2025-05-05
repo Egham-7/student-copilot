@@ -10,7 +10,7 @@ import {
   KnowledgeArtifactChunk,
   NewKnowledgeArtifactChunk,
 } from '@/types/knowledge-artifacts';
-import { eq, inArray } from 'drizzle-orm';
+import { cosineDistance, and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
 
 export class KnowledgeArtifactsRepository {
   /** Get all knowledge artifacts */
@@ -63,6 +63,22 @@ export class KnowledgeArtifactsRepository {
       .from(knowledgeArtifactChunks)
       .where(eq(knowledgeArtifactChunks.artifactId, artifactId))
       .orderBy(knowledgeArtifactChunks.index);
+  }
+
+  async findRelevantChunksByArtifactId(artifactId: number, embedding: number[], limit = 5) {
+    const similarity = sql<number>`1 - (${cosineDistance(knowledgeArtifactChunks.embedding, embedding)})`;
+
+    const chunks = await db
+      .select({
+        content: knowledgeArtifactChunks.content,
+        similarity,
+      })
+      .from(knowledgeArtifactChunks)
+      .where(and(eq(knowledgeArtifactChunks.artifactId, artifactId), gt(similarity, 0.7)))
+      .orderBy(() => desc(similarity))
+      .limit(limit);
+
+    return chunks;
   }
 
   /** Delete all chunks for a given artifact */
