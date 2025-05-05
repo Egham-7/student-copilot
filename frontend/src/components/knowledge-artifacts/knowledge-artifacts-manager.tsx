@@ -7,6 +7,7 @@ import { ArtifactSort } from './artifact-sort';
 import type { KnowledgeArtifact } from '@/types/knowledge-artifacts';
 import { useKnowledgeArtifacts } from '@/hooks/knowledge-artifacts/use-knowledge-artifacts';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
+import { getFileType } from '@/utils/file-icons';
 
 interface ActiveFilters {
   fileTypes: string[];
@@ -23,7 +24,7 @@ interface SortConfig {
   direction: 'asc' | 'desc';
 }
 
-export function KnowledgeArtifactsManager(): JSX.Element {
+export function KnowledgeArtifactsManager() {
   const { session, isLoading: isSessionLoading } = useSupabaseSession();
   const userId = session?.user.id ?? '';
 
@@ -68,7 +69,7 @@ export function KnowledgeArtifactsManager(): JSX.Element {
   }, []);
 
   const fileTypeOptions = useMemo(
-    () => Array.from(new Set(artifacts.map((a) => a.fileType))),
+    () => Array.from(new Set(artifacts.map((a) => getFileType(a.fileType)))),
     [artifacts],
   );
 
@@ -88,7 +89,7 @@ export function KnowledgeArtifactsManager(): JSX.Element {
         // File-type filter
         if (
           activeFilters.fileTypes.length > 0 &&
-          !activeFilters.fileTypes.includes(artifact.fileType)
+          !activeFilters.fileTypes.includes(getFileType(artifact.fileType))
         ) {
           return false;
         }

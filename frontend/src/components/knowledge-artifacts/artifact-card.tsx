@@ -1,5 +1,4 @@
 import type { KnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,6 +15,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getFileIcon } from '@/utils/file-icons';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip';
 
 interface ArtifactCardProps {
   artifact: KnowledgeArtifact;
@@ -26,21 +30,10 @@ export function ArtifactCard({ artifact }: ArtifactCardProps) {
 
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-2">
-            <div className="bg-muted p-2 rounded-md">
-              {getFileIcon(artifact.fileType)}
-            </div>
-            <div className="truncate">
-              <h3 className="font-medium truncate" title={artifact.title}>
-                {artifact.title}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {fileName} • {artifact.fileType.toUpperCase()}
-              </p>
-            </div>
-          </div>
+      <CardHeader>
+        <div className="flex items-center justify-between  p-2 rounded-md">
+          {getFileIcon(artifact.fileType)}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -64,15 +57,39 @@ export function ArtifactCard({ artifact }: ArtifactCardProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        <Tooltip>
+          <TooltipTrigger asChild className="w-full truncate">
+            <h3 className="font-medium truncate cursor-help">
+              {artifact.title}
+            </h3>
+          </TooltipTrigger>
+          <TooltipContent side="top">{artifact.title}</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild className="w-full truncate">
+            <p className="text-xs text-muted-foreground truncate cursor-help">
+              {fileName}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent side="top">{fileName}</TooltipContent>
+        </Tooltip>
       </CardHeader>
+
       <CardContent className="pb-2">
-        <p
-          className="text-sm text-muted-foreground line-clamp-2"
-          title={artifact.content}
-        >
-          {artifact.content}
-        </p>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p
+              className="text-sm text-muted-foreground line-clamp-2 cursor-help"
+              title={artifact.content}
+            >
+              {artifact.content}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{artifact.content}</TooltipContent>
+        </Tooltip>
       </CardContent>
+
       <CardFooter className="flex flex-col items-start gap-2">
         <div className="flex items-center text-xs text-muted-foreground">
           <Clock className="h-3 w-3 mr-1" />
@@ -80,14 +97,6 @@ export function ArtifactCard({ artifact }: ArtifactCardProps) {
           {formatDistanceToNow(new Date(artifact.createdAt), {
             addSuffix: true,
           })}
-        </div>
-        <div className="flex items-center text-xs text-muted-foreground">
-          <Badge variant="outline" className="text-xs">
-            ID: {artifact.id}
-          </Badge>
-          <Badge variant="outline" className="text-xs ml-2">
-            User: {artifact.userId.substring(0, 8)}
-          </Badge>
         </div>
       </CardFooter>
     </Card>

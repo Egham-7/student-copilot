@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { Download, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
@@ -17,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { getFileIcon } from '@/utils/file-icons';
+import { getFileIcon, getFileType } from '@/utils/file-icons';
 
 interface ArtifactTableProps {
   artifacts: KnowledgeArtifact[];
@@ -33,7 +32,6 @@ export function ArtifactTable({ artifacts }: ArtifactTableProps) {
             <TableHead>Type</TableHead>
             <TableHead>Created</TableHead>
             <TableHead>Updated</TableHead>
-            <TableHead>User ID</TableHead>
             <TableHead className="w-[80px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -47,7 +45,7 @@ export function ArtifactTable({ artifacts }: ArtifactTableProps) {
                     <span className="font-medium">{artifact.title}</span>
                   </div>
                 </TableCell>
-                <TableCell>{artifact.fileType.toUpperCase()}</TableCell>
+                <TableCell>{getFileType(artifact.fileType)}</TableCell>
                 <TableCell>
                   {formatDistanceToNow(new Date(artifact.createdAt), {
                     addSuffix: true,
@@ -58,11 +56,7 @@ export function ArtifactTable({ artifacts }: ArtifactTableProps) {
                     addSuffix: true,
                   })}
                 </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="text-xs">
-                    {artifact.userId}
-                  </Badge>
-                </TableCell>
+
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

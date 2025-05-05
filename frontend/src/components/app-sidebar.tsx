@@ -39,9 +39,12 @@ export function AppSidebar() {
     await deleteNote(noteId);
 
     if (nextNote) {
-      navigate({ to: '/$noteId', params: { noteId: nextNote.id.toString() } });
+      navigate({
+        to: '/notes/$noteId',
+        params: { noteId: nextNote.id.toString() },
+      });
     } else {
-      navigate({ to: '/create' });
+      navigate({ to: '/notes/create' });
     }
   };
 
@@ -55,7 +58,10 @@ export function AppSidebar() {
       });
 
       if (newNoteId) {
-        navigate({ to: '/$noteId', params: { noteId: newNoteId.toString() } });
+        navigate({
+          to: '/notes/$noteId',
+          params: { noteId: newNoteId.toString() },
+        });
       }
     } catch {
       // toast handled inside hook
@@ -92,7 +98,7 @@ export function AppSidebar() {
                     return (
                       <SidebarMenuItem key={note.id}>
                         <Link
-                          to="/$noteId"
+                          to="/notes/$noteId"
                           params={{ noteId: note.id.toString() }}
                         >
                           <SidebarMenuButton isActive={isActive}>
@@ -138,10 +144,14 @@ export function AppSidebar() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton isActive={currentPath === '/artifacts'}>
-                      <Book className="h-4 w-4 text-primary" />
-                      <span className="text-sm">Coming Soon</span>
-                    </SidebarMenuButton>
+                    <Link to="/artifacts">
+                      <SidebarMenuButton
+                        isActive={currentPath === '/artifacts'}
+                      >
+                        <Book className="h-4 w-4 text-primary" />
+                        Knowledge Artifacts
+                      </SidebarMenuButton>
+                    </Link>
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>

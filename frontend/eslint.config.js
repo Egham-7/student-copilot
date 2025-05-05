@@ -6,6 +6,9 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
+    ignores: ['./src/components/ui/**', './src/hooks/use-toast.ts'],
+  },
+  {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
     plugins: { js },
     extends: ['js/recommended'],
@@ -23,4 +26,3 @@ export default defineConfig([
     },
   },
 ]);
-

@@ -20,3 +20,9 @@ export function getFileIcon(type: string) {
     return <AiOutlineFileText className="w-4 h-4 text-gray-500" />;
   return <AiOutlineFile className="w-4 h-4 text-muted-foreground" />;
 }
+
+export function getFileType(type: string) {
+  if (type.includes('pdf')) return 'PDF';
+
+  return 'Unknown';
+}

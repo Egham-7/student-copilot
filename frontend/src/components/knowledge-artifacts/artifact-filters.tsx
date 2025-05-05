@@ -7,16 +7,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { DatePicker } from '@/components/ui/date-picker';
 
 export interface DateRange {
   from: Date | null;
@@ -147,67 +141,25 @@ export function ArtifactFilters({
         {/* Date range */}
         <AccordionItem value="date">
           <AccordionTrigger>Created Date</AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-4">
+          <AccordionContent className="flex flex-col gap-y-4">
+            <div className="flex flex-col gap-y-2">
               {/* From */}
-              <div className="grid gap-2">
-                <Label htmlFor="from-date">From</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="from-date"
-                      variant="outline"
-                      className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !dateRange.from && 'text-muted-foreground',
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateRange.from
-                        ? format(dateRange.from, 'PPP')
-                        : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dateRange.from || undefined}
-                      onSelect={(d) => handleDateChange('from', d)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+              <Label htmlFor="from-date">From</Label>
+              <DatePicker
+                id="from-date"
+                value={dateRange.from}
+                onChange={(d) => handleDateChange('from', d)}
+              />
+            </div>
 
+            <div className="flex flex-col gap-y-2">
               {/* To */}
-              <div className="grid gap-2">
-                <Label htmlFor="to-date">To</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="to-date"
-                      variant="outline"
-                      className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !dateRange.to && 'text-muted-foreground',
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateRange.to
-                        ? format(dateRange.to, 'PPP')
-                        : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dateRange.to || undefined}
-                      onSelect={(d) => handleDateChange('to', d)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+              <Label htmlFor="to-date">To</Label>
+              <DatePicker
+                id="to-date"
+                value={dateRange.to}
+                onChange={(d) => handleDateChange('to', d)}
+              />
             </div>
           </AccordionContent>
         </AccordionItem>

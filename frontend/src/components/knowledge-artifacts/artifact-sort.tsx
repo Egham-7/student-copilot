@@ -56,12 +56,6 @@ export function ArtifactSort({ onSortChange, currentSort }: ArtifactSortProps) {
           <DropdownMenuRadioItem value="updatedAt-desc">
             Recently updated
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="id-desc">
-            ID (Highest)
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="id-asc">
-            ID (Lowest)
-          </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

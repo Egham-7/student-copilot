@@ -18,6 +18,7 @@ import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignupIndexImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexImport } from './routes/_auth/login/index'
+import { Route as AppArtifactsIndexImport } from './routes/_app/artifacts/index'
 import { Route as AppNotesCreateIndexImport } from './routes/_app/notes/create/index'
 import { Route as AppNotesNoteIdIndexImport } from './routes/_app/notes/$noteId/index'
 
@@ -61,6 +62,12 @@ const AuthLoginIndexRoute = AuthLoginIndexImport.update({
   id: '/login/',
   path: '/login/',
   getParentRoute: () => AuthRoute,
+} as any)
+
+const AppArtifactsIndexRoute = AppArtifactsIndexImport.update({
+  id: '/artifacts/',
+  path: '/artifacts/',
+  getParentRoute: () => AppRoute,
 } as any)
 
 const AppNotesCreateIndexRoute = AppNotesCreateIndexImport.update({
@@ -114,6 +121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordImport
       parentRoute: typeof rootRoute
     }
+    '/_app/artifacts/': {
+      id: '/_app/artifacts/'
+      path: '/artifacts'
+      fullPath: '/artifacts'
+      preLoaderRoute: typeof AppArtifactsIndexImport
+      parentRoute: typeof AppImport
+    }
     '/_auth/login/': {
       id: '/_auth/login/'
       path: '/login'
@@ -148,11 +162,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AppRouteChildren {
+  AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute
   AppNotesNoteIdIndexRoute: typeof AppNotesNoteIdIndexRoute
   AppNotesCreateIndexRoute: typeof AppNotesCreateIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppArtifactsIndexRoute: AppArtifactsIndexRoute,
   AppNotesNoteIdIndexRoute: AppNotesNoteIdIndexRoute,
   AppNotesCreateIndexRoute: AppNotesCreateIndexRoute,
 }
@@ -176,6 +192,7 @@ export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/artifacts': typeof AppArtifactsIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/notes/$noteId': typeof AppNotesNoteIdIndexRoute
@@ -187,6 +204,7 @@ export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/artifacts': typeof AppArtifactsIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/notes/$noteId': typeof AppNotesNoteIdIndexRoute
@@ -200,6 +218,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_app/artifacts/': typeof AppArtifactsIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/_app/notes/$noteId/': typeof AppNotesNoteIdIndexRoute
@@ -213,6 +232,7 @@ export interface FileRouteTypes {
     | ''
     | '/forgot-password'
     | '/reset-password'
+    | '/artifacts'
     | '/login'
     | '/signup'
     | '/notes/$noteId'
@@ -223,6 +243,7 @@ export interface FileRouteTypes {
     | ''
     | '/forgot-password'
     | '/reset-password'
+    | '/artifacts'
     | '/login'
     | '/signup'
     | '/notes/$noteId'
@@ -234,6 +255,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/_app/artifacts/'
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/_app/notes/$noteId/'
@@ -280,6 +302,7 @@ export const routeTree = rootRoute
     "/_app": {
       "filePath": "_app.tsx",
       "children": [
+        "/_app/artifacts/",
         "/_app/notes/$noteId/",
         "/_app/notes/create/"
       ]
@@ -296,6 +319,10 @@ export const routeTree = rootRoute
     },
     "/reset-password": {
       "filePath": "reset-password.tsx"
+    },
+    "/_app/artifacts/": {
+      "filePath": "_app/artifacts/index.tsx",
+      "parent": "/_app"
     },
     "/_auth/login/": {
       "filePath": "_auth/login/index.tsx",
