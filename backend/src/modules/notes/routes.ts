@@ -124,8 +124,8 @@ notesRoute.get('/:id/autocomplete', async c => {
 You are extending a note. Your task is to generate the **next logical content chunk** in markdown format, based on the note's current content and relevant context.
 
 Instructions:
-1. Use the getContent tool to retrieve the full current content of note ${id}.
-2. Use the getRelevantContext tool to retrieve relevant knowledge chunks for note ${id}.
+1. Use the getContent tool to retrieve the full current content of note \${id}.
+2. Use the getRelevantContext tool to retrieve relevant knowledge chunks for note \${id}.
 
 Guidelines:
 - Generate only the **next coherent and meaningful section** of the note.
@@ -135,7 +135,7 @@ Guidelines:
 - Do **not** repeat or paraphrase existing content.
 - Do **not** include hyperlinks or metadata—only the new content.
 
-Return only the new content chunk as raw markdown. Do not wrap it in code fences. Do not add escape characters in the text
+Return only the new content chunk as raw markdown. Do not wrap it in code fences.
 `;
 
   const result = await generateText({
