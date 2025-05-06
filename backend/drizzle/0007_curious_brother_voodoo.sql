@@ -1,0 +1,1 @@
+ALTER TABLE "knowledge_artifact_chunks" ALTER COLUMN "embedding" SET NOT NULL;

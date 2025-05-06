@@ -10,7 +10,7 @@ import {
   KnowledgeArtifactChunk,
   NewKnowledgeArtifactChunk,
 } from '@/types/knowledge-artifacts';
-import { cosineDistance, and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
+import { cosineDistance, and, eq, gt, inArray, sql } from 'drizzle-orm';
 
 export class KnowledgeArtifactsRepository {
   /** Get all knowledge artifacts */
@@ -74,8 +74,8 @@ export class KnowledgeArtifactsRepository {
         similarity,
       })
       .from(knowledgeArtifactChunks)
-      .where(and(eq(knowledgeArtifactChunks.artifactId, artifactId), gt(similarity, 0.7)))
-      .orderBy(() => desc(similarity))
+      .where(and(eq(knowledgeArtifactChunks.artifactId, artifactId), gt(similarity, 0.5)))
+      .orderBy(t => t.similarity)
       .limit(limit);
 
     return chunks;

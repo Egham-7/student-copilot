@@ -92,7 +92,7 @@ export class NotesService {
     const scoredArtifacts = note.artifacts
       .map(artifact => ({
         ...artifact,
-        score: cosineSimilarity(noteEmbedding, artifact.embedding),
+        score: cosineSimilarity(noteEmbedding, artifact.embedding ?? []),
       }))
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
@@ -107,7 +107,11 @@ export class NotesService {
       }),
     );
 
+    console.log('Artifact chunks:', artifactChunks);
+
     const allChunks = artifactChunks.flat();
+    console.log('All chunks:', allChunks);
+
     autocompleteCache.set(cacheKey, allChunks);
 
     return allChunks;

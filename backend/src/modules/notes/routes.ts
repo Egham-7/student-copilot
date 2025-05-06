@@ -121,15 +121,25 @@ notesRoute.get('/:id/autocomplete', async c => {
   if (isNaN(id)) return c.text('Invalid ID', 400);
 
   const inputPrompt = `
-You are continuing a note. Your task is to write the **next logical content chunk** based on its current state.
+You are extending a note. Your task is to generate the **next logical content chunk** in markdown format, based on the note's current content and relevant context.
 
-Use the "getRelevantContext" tool to fetch relevant chunks from related knowledge artifacts for note ${id}.
+Instructions:
+1. Use the getContent tool to retrieve the full current content of note ${id}.
+2. Use the getRelevantContext tool to retrieve relevant knowledge chunks for note ${id}.
 
-Write only the next chunk, without repeating or summarizing previous content. Keep the tone and style consistent with the original note.
+Guidelines:
+- Generate only the **next coherent and meaningful section** of the note.
+- Output must be in valid **markdown**.
+- Use appropriate markdown elements for structured note-taking (e.g., headers, bullet points, numbered lists, bold, italics, callouts, code blocks, etc.).
+- Maintain the original **tone, formatting, and writing style**.
+- Do **not** repeat or paraphrase existing content.
+- Do **not** include hyperlinks or metadata—only the new content.
+
+Return only the new content chunk as raw markdown. Do not wrap it in code fences. Do not add escape characters in the text
 `;
 
   const result = await generateText({
-    model: openai('gpt-4'),
+    model: openai('gpt-4o-mini'),
     tools: {
       getRelevantContext: tool({
         description: 'Retrieve relevant content chunks for a note',
@@ -137,17 +147,32 @@ Write only the next chunk, without repeating or summarizing previous content. Ke
           noteId: z.number(),
         }),
         execute: async ({ noteId }) => {
-          return notesService.retrieveNoteChunks(noteId);
+          const chunks = await notesService.retrieveNoteChunks(noteId);
+
+          return chunks.join('\n\n');
+        },
+      }),
+      getNoteContent: tool({
+        description: 'Retrieve the content of a note',
+        parameters: z.object({
+          noteId: z.number(),
+        }),
+        execute: async ({ noteId }) => {
+          const note = await notesService.getNoteById(noteId);
+
+          return note.content;
         },
       }),
     },
-    messages: [
-      {
-        role: 'user',
-        content: inputPrompt,
-      },
-    ],
+    onStepFinish: ({ toolResults, toolCalls }) => {
+      console.log('Tool calls:', toolCalls);
+      console.log('Tool results:', toolResults);
+    },
+    prompt: inputPrompt,
+    maxSteps: 5,
   });
+
+  console.log('Result:', result.text);
 
   return c.text(result.text);
 });

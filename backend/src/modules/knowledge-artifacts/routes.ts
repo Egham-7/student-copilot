@@ -37,7 +37,6 @@ artifactsRoute.post('/', async c => {
       filePath,
       fileType,
       userId,
-      embedding: [],
     });
     return c.json(created, 201);
   } catch (e) {

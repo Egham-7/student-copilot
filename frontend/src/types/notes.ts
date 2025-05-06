@@ -1,10 +1,9 @@
-import type { PartialBlock } from '@blocknote/core';
 import { KnowledgeArtifact } from './knowledge-artifacts';
 
 export type Note = {
   id: number;
   title: string;
-  content?: PartialBlock[];
+  content?: string;
   embedding?: number[] | null;
   createdAt: string;
   updatedAt: string;

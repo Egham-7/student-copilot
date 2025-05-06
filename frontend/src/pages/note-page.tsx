@@ -45,9 +45,7 @@ export default function NotePage() {
 
   const { mutateAsync: generateAutoComplete } = useGenerateAutoComplete();
 
-  const noteEditor = useCreateBlockNote({
-    initialContent: note?.content,
-  });
+  const noteEditor = useCreateBlockNote();
 
   // Auto-save handler (debounced)
   const debouncedSaveRef =
@@ -56,10 +54,11 @@ export default function NotePage() {
   const saveNote = useCallback(async () => {
     if (!noteEditor || !note || !session) return;
 
+    const markdown = await noteEditor.blocksToMarkdownLossy();
     await updateNote({
       id: note.id,
       title: note.title,
-      content: noteEditor.document,
+      content: markdown,
       userId: session.user.id,
     });
 
@@ -79,10 +78,21 @@ export default function NotePage() {
   // Attach autosave on editor change
   useEffect(() => {
     if (!noteEditor) return;
-    return noteEditor.onEditorContentChange(() => {
+    return noteEditor.onChange(() => {
       debouncedSaveRef.current?.();
     });
   }, [noteEditor]);
+
+  useEffect(() => {
+    const parseAndReplaceBlocks = async () => {
+      const blocks = await noteEditor.tryParseMarkdownToBlocks(
+        note?.content ?? '',
+      );
+      noteEditor.replaceBlocks(noteEditor.document, blocks);
+    };
+
+    parseAndReplaceBlocks();
+  }, [note?.content, noteEditor]);
 
   // Manual save hotkey
   useHotkeys([
@@ -105,6 +115,7 @@ export default function NotePage() {
       const autoCompleteText = await generateAutoComplete(note.id);
 
       editor.insertInlineContent(autoCompleteText);
+      saveNote();
     },
     aliases: ['autocomplete', 'ai'],
     group: 'AI',

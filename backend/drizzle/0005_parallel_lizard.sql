@@ -1,0 +1,1 @@
+ALTER TABLE "knowledge_artifacts" ALTER COLUMN "embedding" DROP NOT NULL;
