@@ -18,7 +18,6 @@ import { ErrorState } from '@/components/error-display';
 import { useHotkeys } from '@mantine/hooks';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
-import { NoteChat } from '@/components/notes/note-chat';
 import { NoteHeader } from '@/components/notes/note-header';
 import { debounce } from 'lodash';
 import { DebouncedFunc } from 'lodash';
@@ -54,15 +53,14 @@ export default function NotePage() {
   const saveNote = useCallback(async () => {
     if (!noteEditor || !note || !session) return;
 
-    const markdown = await noteEditor.blocksToMarkdownLossy();
+    const markdown = await noteEditor.blocksToHTMLLossy(noteEditor.document);
+
     await updateNote({
       id: note.id,
       title: note.title,
       content: markdown,
       userId: session.user.id,
     });
-
-    toast({ title: 'Note saved' });
   }, [noteEditor, note, session, updateNote, toast]);
 
   // Debounce setup
@@ -85,9 +83,7 @@ export default function NotePage() {
 
   useEffect(() => {
     const parseAndReplaceBlocks = async () => {
-      const blocks = await noteEditor.tryParseMarkdownToBlocks(
-        note?.content ?? '',
-      );
+      const blocks = await noteEditor.tryParseHTMLToBlocks(note?.content ?? '');
       noteEditor.replaceBlocks(noteEditor.document, blocks);
     };
 
@@ -101,6 +97,7 @@ export default function NotePage() {
       (e) => {
         e.preventDefault();
         saveNote();
+        toast({ title: 'Note saved' });
       },
     ],
   ]);
@@ -114,8 +111,16 @@ export default function NotePage() {
 
       const autoCompleteText = await generateAutoComplete(note.id);
 
-      editor.insertInlineContent(autoCompleteText);
-      saveNote();
+      const blocks = await editor.tryParseHTMLToBlocks(autoCompleteText);
+
+      console.log('Blocks: ', blocks);
+      const lastBlock = editor.document.at(editor.document.length - 1);
+
+      if (lastBlock) {
+        editor.insertBlocks(blocks, lastBlock, 'after');
+      } else {
+        editor.replaceBlocks(editor.document, blocks);
+      }
     },
     aliases: ['autocomplete', 'ai'],
     group: 'AI',
@@ -185,7 +190,6 @@ export default function NotePage() {
           }
         />
       </BlockNoteView>
-      <NoteChat />
     </div>
   );
 }

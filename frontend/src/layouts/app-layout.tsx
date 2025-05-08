@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 import { useEffect } from 'react';
 import { Protected } from './protected-layout';
+import { NoteDock } from '@/components/notes/note-dock';
 
 export function AppLayout() {
   const session = useSupabaseSession();
@@ -23,6 +24,7 @@ export function AppLayout() {
         <AppSidebar />
         <main className="relative flex-1 overflow-auto bg-background">
           <Outlet />
+          <NoteDock />
         </main>
       </div>
     </Protected>
