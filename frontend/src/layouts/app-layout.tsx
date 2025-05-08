@@ -3,7 +3,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
 import { useEffect } from 'react';
 import { Protected } from './protected-layout';
-import { NoteDock } from '@/components/notes/note-dock';
+import { NoteDock } from '@/components/notes/notes-dock';
 
 export function AppLayout() {
   const session = useSupabaseSession();

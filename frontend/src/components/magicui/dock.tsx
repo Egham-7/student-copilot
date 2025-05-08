@@ -39,7 +39,6 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
       iconMagnification = DEFAULT_MAGNIFICATION,
       iconDistance = DEFAULT_DISTANCE,
       direction = 'middle',
-      ...props
     },
     ref,
   ) => {
@@ -49,8 +48,9 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
       return React.Children.map(children, (child) => {
         if (React.isValidElement(child) && child.type === DockIcon) {
           return React.cloneElement(child, {
+            // @ts-expect-error library code
             ...child.props,
-            mouseX: mouseX,
+            mouseX,
             size: iconSize,
             magnification: iconMagnification,
             distance: iconDistance,
@@ -65,8 +65,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
         ref={ref}
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        {...props}
-        className={cn(dockVariants({ className }), {
+        className={cn(dockVariants(), className, {
           'items-start': direction === 'top',
           'items-center': direction === 'middle',
           'items-end': direction === 'bottom',
