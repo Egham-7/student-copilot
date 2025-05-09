@@ -1,4 +1,3 @@
-'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
@@ -41,7 +40,7 @@ import {
 } from 'react-icons/fi';
 import { LuSparkles } from 'react-icons/lu';
 import { Markdown } from '../markdown';
-import { API_BASE_URL } from '@/services';
+import { NOTES_BASE } from '@/services/notes';
 
 const formSchema = z.object({
   message: z.string().min(1, { message: 'Type a message.' }),
@@ -54,7 +53,8 @@ export function NoteChat({ noteId }: { noteId: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    api: `${API_BASE_URL}/notes/${noteId}/chat`,
+    api: `${NOTES_BASE}/${noteId}/chat`,
+    maxSteps: 3
   });
   const isLoading = status !== 'ready' && status !== 'error';
 
@@ -80,7 +80,7 @@ export function NoteChat({ noteId }: { noteId: number }) {
       <PopoverContent
         sideOffset={8}
         align="center"
-        className="p-0 border-none bg-transparent shadow-none max-w-2xl w-full"
+        className="p-0 border-none bg-transparent shadow-none min-w-[450px] max-w-xl w-full"
       >
         <motion.div
           {...(isDraggable ? { drag: true, dragElastic: 0.2 } : {})}
@@ -117,125 +117,133 @@ export function NoteChat({ noteId }: { noteId: number }) {
             <CardContent className="flex-1 px-6 py-4 overflow-hidden">
               <ScrollArea className="h-full">
                 <div className="space-y-6">
-                  {messages.map((msg, i) => (
-                    <div
-                      key={msg.id}
-                      className={cn(
-                        'flex items-start gap-3',
-                        msg.role === 'user' ? 'justify-end' : 'justify-start',
-                      )}
-                    >
-                      {msg.role === 'assistant' && (
-                        <LuSparkles className="w-5 h-5 text-primary mt-1" />
-                      )}
+                    {messages.map((msg, i) => (
                       <div
+                        key={msg.id}
                         className={cn(
-                          'rounded-xl px-4 py-3 max-w-[80%] text-base space-y-3',
-                          msg.role === 'user'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground',
+                          'flex items-start gap-3',
+                          msg.role === 'user' ? 'justify-end' : 'justify-start',
                         )}
                       >
-                        {msg.parts?.map((part, j) => {
-                          if (part.type === 'text') {
-                            return (
-                              <Markdown
-                                key={j}
-                                content={part.text}
-                                id={`msg-${i}-${j}`}
-                              />
-                            );
-                          }
+                        {msg.role === 'assistant' && (
+                          <LuSparkles className="w-5 h-5 text-primary mt-1" />
+                        )}
+                        <div
+                          className={cn(
+                            'rounded-xl px-4 py-3 max-w-[80%] text-base space-y-3',
+                            msg.role === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground',
+                          )}
+                        >
+                          {msg.parts ? (
+                            msg.parts?.map((part, j) => {
+                              if (part.type === 'text') {
+                                return (
+                                  <Markdown
+                                    key={j}
+                                    content={part.text}
+                                    id={`msg-${i}-${j}`}
+                                  />
+                                );
+                              }
 
-                          if (part.type === 'reasoning') {
-                            return (
-                              <div key={j}>
-                                <Badge variant="outline">💡 Reasoning</Badge>
-                                <p className="text-sm mt-1">{part.reasoning}</p>
-                                <ul className="text-xs text-muted-foreground list-disc pl-5 mt-1 space-y-1">
-                                  {part.details.map((detail, k) => (
-                                    <li key={k}>
-                                      {detail.type === 'text'
-                                        ? detail.text
-                                        : '[REDACTED]'}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            );
-                          }
+                              if (part.type === 'reasoning') {
+                                return (
+                                  <div key={j}>
+                                    <Badge variant="outline">💡 Reasoning</Badge>
+                                    <p className="text-sm mt-1">{part.reasoning}</p>
+                                    <ul className="text-xs text-muted-foreground list-disc pl-5 mt-1 space-y-1">
+                                      {part.details.map((detail, k) => (
+                                        <li key={k}>
+                                          {detail.type === 'text'
+                                            ? detail.text
+                                            : '[REDACTED]'}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                );
+                              }
 
-                          if (part.type === 'tool-invocation') {
-                            return (
-                              <div
-                                key={j}
-                                className="text-sm italic text-muted-foreground"
-                              >
-                                🛠 <strong>Calling:</strong>{' '}
-                                {part.toolInvocation.toolName}
-                              </div>
-                            );
-                          }
+                              if (part.type === 'tool-invocation') {
+                                return (
+                                  <div
+                                    key={j}
+                                    className="text-sm italic text-muted-foreground"
+                                  >
+                                    🛠 <strong>Calling:</strong>{' '}
+                                    {part.toolInvocation.toolName}
+                                  </div>
+                                );
+                              }
 
-                          if (part.type === 'source') {
-                            return (
-                              <div
-                                key={j}
-                                className="text-sm italic text-muted-foreground"
-                              >
-                                🔗 Source:{' '}
-                                <a
-                                  href={part.source.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="underline text-primary hover:text-primary/80"
-                                >
-                                  {part.source.title}
-                                </a>
-                              </div>
-                            );
-                          }
+                              if (part.type === 'source') {
+                                return (
+                                  <div
+                                    key={j}
+                                    className="text-sm italic text-muted-foreground"
+                                  >
+                                    🔗 Source:{' '}
+                                    <a
+                                      href={part.source.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="underline text-primary hover:text-primary/80"
+                                    >
+                                      {part.source.title}
+                                    </a>
+                                  </div>
+                                );
+                              }
 
-                          if (part.type === 'file') {
-                            return (
-                              <div
-                                key={j}
-                                className="text-sm italic text-muted-foreground"
-                              >
-                                📎 File:{' '}
-                                <a
-                                  href={part.data}
-                                  download
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="underline text-primary hover:text-primary/80"
-                                >
-                                  Download ({part.mimeType})
-                                </a>
-                              </div>
-                            );
-                          }
+                              if (part.type === 'file') {
+                                return (
+                                  <div
+                                    key={j}
+                                    className="text-sm italic text-muted-foreground"
+                                  >
+                                    📎 File:{' '}
+                                    <a
+                                      href={part.data}
+                                      download
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="underline text-primary hover:text-primary/80"
+                                    >
+                                      Download ({part.mimeType})
+                                    </a>
+                                  </div>
+                                );
+                              }
 
-                          if (part.type === 'step-start') {
-                            return (
-                              <div
-                                key={j}
-                                className="text-xs italic text-accent-foreground"
-                              >
-                                🪄 <strong>Step started:</strong> Preparing the
-                                next action...
-                              </div>
-                            );
-                          }
+                              if (part.type === 'step-start') {
+                                return (
+                                  <div
+                                    key={j}
+                                    className="text-xs italic text-accent-foreground"
+                                  >
+                                    🪄 <strong>Step started:</strong> Preparing the
+                                    next action...
+                                  </div>
+                                );
+                              }
 
-                          return null;
-                        })}
+                              return null;
+                            })
+                          ) : (
+                            <Markdown
+                              content={msg.content}
+                              id={`msg-${i}`}
+                            />
+                          )}
+                        </div>
+                        {msg.role === 'user' && (
+                          <FiUser className="w-5 h-5 text-muted-foreground mt-1" />
+                        )}
                       </div>
-                      {msg.role === 'user' && (
-                        <FiUser className="w-5 h-5 text-muted-foreground mt-1" />
-                      )}
-                    </div>
-                  ))}
+                    ))}
+
                   <div ref={scrollRef} />
                 </div>
               </ScrollArea>

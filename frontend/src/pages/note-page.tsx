@@ -113,7 +113,6 @@ export default function NotePage() {
 
       const blocks = await editor.tryParseHTMLToBlocks(autoCompleteText);
 
-      console.log('Blocks: ', blocks);
       const lastBlock = editor.document.at(editor.document.length - 1);
 
       if (lastBlock) {

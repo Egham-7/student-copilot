@@ -2,7 +2,7 @@ import type { Note, NoteUpdate, NoteCreate } from '@/types/notes';
 
 import { API_BASE_URL } from '..';
 
-const NOTES_BASE = `${API_BASE_URL}/notes`;
+export const NOTES_BASE = `${API_BASE_URL}/notes`;
 
 export const notesService = {
   // --- Notes ---

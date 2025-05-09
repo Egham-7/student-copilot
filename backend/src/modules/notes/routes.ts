@@ -3,7 +3,7 @@ import { NotesRepository } from "./repository";
 import { NotesService } from "./service";
 import { KnowledgeArtifactsRepository } from "../knowledge-artifacts/repository";
 import { openai } from "@ai-sdk/openai";
-import { generateText, tool } from "ai";
+import { generateText, streamText, tool } from "ai";
 import { z } from "zod";
 import { timeout } from "hono/timeout";
 
@@ -167,10 +167,6 @@ Return only the new content chunk as raw HTML. Do not wrap it in code fences.
         },
       }),
     },
-    onStepFinish: ({ toolResults, toolCalls }) => {
-      console.log("Tool calls:", toolCalls);
-      console.log("Tool results:", toolResults);
-    },
     prompt: inputPrompt,
     maxSteps: 5,
   });
@@ -179,5 +175,69 @@ Return only the new content chunk as raw HTML. Do not wrap it in code fences.
 
   return c.text(text);
 });
+
+notesRoute.use("/:id/chat", timeout(60000));
+
+notesRoute.post("/:id/chat", async (c) => {
+
+    const id = Number(c.req.param("id"));
+    if (isNaN(id)) return c.text("Invalid ID", 400);
+
+    const inputPrompt = `
+    You are an AI assistant engaging in a conversation about a note's content. Your task is to help users understand, analyze, and discuss the content of the note.
+
+    Instructions:
+    1. Use the getNoteContent tool to retrieve the full current content of note ${id}.
+    2. Use the getRelevantContext tool to retrieve relevant knowledge chunks for note ${id}.
+
+    Guidelines:
+    - Engage in a natural conversation about the note's content
+    - Provide clear and concise responses
+    - Help users understand complex concepts from the note
+    - Answer questions about the content
+    - Suggest connections between different parts of the note
+    - Reference specific parts of the note when relevant
+    - Stay focused on the note's content and directly related topics
+    - Be helpful and informative while maintaining a conversational tone
+
+    Respond naturally as a knowledgeable conversation partner who has read and understood the note thoroughly.
+    `;
+
+
+    const result =  streamText({
+      model: openai("gpt-4.1-mini"),
+      tools: {
+        getRelevantContext: tool({
+          description: "Retrieve relevant content chunks for a note",
+          parameters: z.object({
+            noteId: z.number(),
+          }),
+          execute: async ({ noteId }) => {
+            const chunks = await notesService.retrieveNoteChunks(noteId);
+
+            return chunks.join("\n");
+          },
+        }),
+        getNoteContent: tool({
+          description: "Retrieve the content of a note",
+          parameters: z.object({
+            noteId: z.number(),
+          }),
+          execute: async ({ noteId }) => {
+            const note = await notesService.getNoteById(noteId);
+
+            return note.content;
+          },
+        }),
+      },
+      prompt: inputPrompt,
+      maxSteps: 5,
+    });
+
+
+    return result.toDataStreamResponse();
+
+
+})
 
 export default notesRoute;

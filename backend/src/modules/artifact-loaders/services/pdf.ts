@@ -10,29 +10,24 @@ export class PDFArtifactLoader implements ArtifactLoader {
   constructor() {}
 
   async loadAndChunk(artifactId: number, filePath: string): Promise<NewKnowledgeArtifactChunk[]> {
-    console.log(`[PDFArtifactLoader] Start loading file: ${filePath}`);
 
     const s3File = s3.file(filePath);
     const buffer = await s3File.arrayBuffer();
-    console.log(`[PDFArtifactLoader] Fetched file from S3 (size: ${buffer.byteLength} bytes)`);
 
     const tempPath = join('/tmp', `${crypto.randomUUID()}.pdf`);
     const file = Bun.file(tempPath);
     await file.write(new Uint8Array(buffer));
-    console.log(`[PDFArtifactLoader] Written to temp file: ${tempPath}`);
 
     const loader = new PDFLoader(tempPath);
     const docs = await loader.load();
-    console.log(`[PDFArtifactLoader] Loaded ${docs.length} document(s) from PDF`);
 
     const chunks = await Promise.all(
-      docs.map(async (d, index) => {
+      docs.map(async d => {
         const { embedding } = await embed({
           model: openai.embedding('text-embedding-3-small'),
           value: d.pageContent,
         });
 
-        console.log(`[PDFArtifactLoader] Embedded chunk ${index + 1}/${docs.length}`);
 
         return {
           artifactId,
@@ -44,10 +39,7 @@ export class PDFArtifactLoader implements ArtifactLoader {
     );
 
     await file.delete();
-    console.log(`[PDFArtifactLoader] Temp file deleted: ${tempPath}`);
-    console.log(`[PDFArtifactLoader] Finished processing ${chunks.length} chunks.`);
 
     return chunks;
   }
 }
-
