@@ -1,7 +1,7 @@
-import { db } from '@/db';
-import { notes, notesToKnowledgeArtifacts } from '@/db/schema';
-import { NewNote, UpdateNote } from '@/types/notes';
-import { eq , and, inArray} from 'drizzle-orm';
+import { db } from "@/db";
+import { notes, notesToKnowledgeArtifacts } from "@/db/schema";
+import { NewNote, UpdateNote } from "@/types/notes";
+import { eq, and, inArray } from "drizzle-orm";
 
 export class NotesRepository {
   async findAll() {
@@ -27,7 +27,7 @@ export class NotesRepository {
   async linkArtifacts(noteId: number, artifactIds: number[]) {
     if (!artifactIds.length) return [];
 
-    const values = artifactIds.map(artifactId => ({
+    const values = artifactIds.map((artifactId) => ({
       noteId,
       artifactId,
     }));
@@ -36,19 +36,16 @@ export class NotesRepository {
   }
 
   async unlinkArtifacts(noteId: number, artifactIds: number[]) {
-  if (!artifactIds.length) return [];
+    if (!artifactIds.length) return [];
 
-  return db
-    .delete(notesToKnowledgeArtifacts)
-    .where(
-      and(
-        eq(notesToKnowledgeArtifacts.noteId, noteId),
-        inArray(notesToKnowledgeArtifacts.artifactId, artifactIds)
+    return db
+      .delete(notesToKnowledgeArtifacts)
+      .where(
+        and(
+          eq(notesToKnowledgeArtifacts.noteId, noteId),
+          inArray(notesToKnowledgeArtifacts.artifactId, artifactIds),
+        ),
       )
-    )
-    .returning();
-}
-
-
- 
+      .returning();
+  }
 }

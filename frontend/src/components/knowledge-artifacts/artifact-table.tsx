@@ -1,4 +1,4 @@
-import type { KnowledgeArtifact } from '@/types/knowledge-artifacts';
+import type { KnowledgeArtifact } from "@/types/knowledge-artifacts";
 import {
   Table,
   TableBody,
@@ -6,17 +6,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
-import { Download, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { formatDistanceToNow } from "date-fns";
+import { Download, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { getFileIcon, getFileType } from '@/utils/file-icons';
+} from "@/components/ui/dropdown-menu";
+import { getFileIcon, getFileType } from "@/utils/file-icons";
 
 interface ArtifactTableProps {
   artifacts: KnowledgeArtifact[];

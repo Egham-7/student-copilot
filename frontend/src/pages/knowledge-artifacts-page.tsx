@@ -1,4 +1,4 @@
-import { KnowledgeArtifactsManager } from '@/components/knowledge-artifacts/knowledge-artifacts-manager';
+import { KnowledgeArtifactsManager } from "@/components/knowledge-artifacts/knowledge-artifacts-manager";
 
 export default function KnowledgeArtifactsPage() {
   return (

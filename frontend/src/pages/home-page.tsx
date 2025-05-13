@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { useNotes } from '@/hooks/notes/use-notes';
-import { SkeletonItem } from '@/components/skeleton-item';
-import { ErrorState } from '@/components/error-display';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useNotes } from "@/hooks/notes/use-notes";
+import { SkeletonItem } from "@/components/skeleton-item";
+import { ErrorState } from "@/components/error-display";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -19,18 +19,18 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!session && !isLoading) {
-      navigate({ to: '/login' });
+      navigate({ to: "/login" });
     }
     if (notes && notes.length > 0) {
       navigate({
-        to: '/notes/$noteId',
+        to: "/notes/$noteId",
         params: {
           noteId: notes[0].id.toString(),
         },
       });
     } else if (notes && notes.length === 0) {
       navigate({
-        to: '/notes/create',
+        to: "/notes/create",
       });
     }
   }, [notes, navigate]);
@@ -60,8 +60,8 @@ const HomePage = () => {
     <div className="flex items-center justify-center h-screen text-muted-foreground">
       <h1 className="text-xl font-semibold">
         {notes?.length === 0
-          ? 'No notes found'
-          : 'Redirecting to your notes...'}
+          ? "No notes found"
+          : "Redirecting to your notes..."}
       </h1>
     </div>
   );

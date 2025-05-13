@@ -7,75 +7,90 @@ import {
   index,
   integer,
   uuid,
-} from 'drizzle-orm/pg-core';
+} from "drizzle-orm/pg-core";
 
 export const notes = pgTable(
-  'notes',
+  "notes",
   {
-    id: serial('id').primaryKey(),
-    title: text('title').notNull(),
-    content: text('content'),
-    embedding: vector('embedding', { dimensions: 1536 }),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-    userId: uuid('user_id').notNull(),
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    content: text("content"),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    userId: uuid("user_id").notNull(),
   },
-  table => [index('idx_notes_embedding').using('hnsw', table.embedding.op('vector_cosine_ops'))],
+  (table) => [
+    index("idx_notes_embedding").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
+    ),
+  ],
 );
 
 export const knowledgeArtifacts = pgTable(
-  'knowledge_artifacts',
+  "knowledge_artifacts",
   {
-    id: serial('id').primaryKey(),
-    title: text('title').notNull(),
-    filePath: text('file_path').notNull(),
-    embedding: vector('embedding', { dimensions: 1536 }),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-    fileType: text('file_type').notNull(),
-    userId: uuid('user_id').notNull(),
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    filePath: text("file_path").notNull(),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    fileType: text("file_type").notNull(),
+    userId: uuid("user_id").notNull(),
   },
-  table => [
-    index('idx_knowledge_artifacts_embedding').using(
-      'hnsw',
-      table.embedding.op('vector_cosine_ops'),
+  (table) => [
+    index("idx_knowledge_artifacts_embedding").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
     ),
   ],
 );
 
 export const knowledgeArtifactChunks = pgTable(
-  'knowledge_artifact_chunks',
+  "knowledge_artifact_chunks",
   {
-    id: serial('id').primaryKey(),
-    artifactId: integer('artifact_id')
+    id: serial("id").primaryKey(),
+    artifactId: integer("artifact_id")
       .notNull()
-      .references(() => knowledgeArtifacts.id, { onDelete: 'cascade' }),
-    content: text('content').notNull(),
-    embedding: vector('embedding', { dimensions: 1536 }).notNull(),
-    index: integer('index').notNull(), // to keep chunks ordered
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+      .references(() => knowledgeArtifacts.id, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+    index: integer("index").notNull(), // to keep chunks ordered
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
-  table => [
-    index('idx_knowledge_artifact_chunks_embedding').using(
-      'hnsw',
-      table.embedding.op('vector_cosine_ops'),
+  (table) => [
+    index("idx_knowledge_artifact_chunks_embedding").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
     ),
-    index('idx_knowledge_artifact_chunks_artifact_id').on(table.artifactId),
+    index("idx_knowledge_artifact_chunks_artifact_id").on(table.artifactId),
   ],
 );
 
 export const notesToKnowledgeArtifacts = pgTable(
-  'notes_to_knowledge_artifacts',
+  "notes_to_knowledge_artifacts",
   {
-    noteId: integer('note_id')
+    noteId: integer("note_id")
       .notNull()
-      .references(() => notes.id, { onDelete: 'cascade' }),
-    artifactId: integer('artifact_id')
+      .references(() => notes.id, { onDelete: "cascade" }),
+    artifactId: integer("artifact_id")
       .notNull()
-      .references(() => knowledgeArtifacts.id, { onDelete: 'cascade' }),
+      .references(() => knowledgeArtifacts.id, { onDelete: "cascade" }),
   },
-  table => [
-    index('idx_notes_to_knowledge_artifacts_note_id').on(table.noteId),
-    index('idx_notes_to_knowledge_artifacts_artifact_id').on(table.artifactId),
+  (table) => [
+    index("idx_notes_to_knowledge_artifacts_note_id").on(table.noteId),
+    index("idx_notes_to_knowledge_artifacts_artifact_id").on(table.artifactId),
   ],
 );

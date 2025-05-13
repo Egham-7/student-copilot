@@ -1,32 +1,32 @@
-import type { KnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { Button } from '@/components/ui/button';
+import type { KnowledgeArtifact } from "@/types/knowledge-artifacts";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-import { Download, Eye, MoreHorizontal, Trash2, Clock } from 'lucide-react';
+} from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+import { Download, Eye, MoreHorizontal, Trash2, Clock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { getFileIcon } from '@/utils/file-icons';
+} from "@/components/ui/dropdown-menu";
+import { getFileIcon } from "@/utils/file-icons";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
 interface ArtifactCardProps {
   artifact: KnowledgeArtifact;
 }
 
 export function ArtifactCard({ artifact }: ArtifactCardProps) {
-  const fileName = artifact.filePath.split('/').pop() || artifact.title;
+  const fileName = artifact.filePath.split("/").pop() || artifact.title;
 
   return (
     <Card>
@@ -93,7 +93,7 @@ export function ArtifactCard({ artifact }: ArtifactCardProps) {
       <CardFooter className="flex flex-col items-start gap-2">
         <div className="flex items-center text-xs text-muted-foreground">
           <Clock className="h-3 w-3 mr-1" />
-          Created{' '}
+          Created{" "}
           {formatDistanceToNow(new Date(artifact.createdAt), {
             addSuffix: true,
           })}

@@ -1,16 +1,16 @@
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { X } from 'lucide-react';
-import { format } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
-import { DatePicker } from '@/components/ui/date-picker';
+} from "@/components/ui/accordion";
+import { X } from "lucide-react";
+import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export interface DateRange {
   from: Date | null;
@@ -42,7 +42,7 @@ export function ArtifactFilters({
     onFilterChange({ ...activeFilters, fileTypes: next });
   };
 
-  const handleDateChange = (field: 'from' | 'to', date: Date | undefined) => {
+  const handleDateChange = (field: "from" | "to", date: Date | undefined) => {
     onFilterChange({
       ...activeFilters,
       dateRange: { ...dateRange, [field]: date },
@@ -92,15 +92,15 @@ export function ArtifactFilters({
 
           {(dateRange.from || dateRange.to) && (
             <Badge variant="secondary" className="gap-1">
-              {dateRange.from ? format(dateRange.from, 'MMM d, yyyy') : 'Any'} –{' '}
-              {dateRange.to ? format(dateRange.to, 'MMM d, yyyy') : 'Any'}
+              {dateRange.from ? format(dateRange.from, "MMM d, yyyy") : "Any"} –{" "}
+              {dateRange.to ? format(dateRange.to, "MMM d, yyyy") : "Any"}
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-4 w-4 p-0 ml-1"
                 onClick={() => {
-                  handleDateChange('from', undefined);
-                  handleDateChange('to', undefined);
+                  handleDateChange("from", undefined);
+                  handleDateChange("to", undefined);
                 }}
               >
                 <X className="h-3 w-3" />
@@ -111,7 +111,7 @@ export function ArtifactFilters({
         </div>
       )}
 
-      <Accordion type="multiple" defaultValue={['file-type', 'date']}>
+      <Accordion type="multiple" defaultValue={["file-type", "date"]}>
         {/* File types */}
         <AccordionItem value="file-type">
           <AccordionTrigger>File Type</AccordionTrigger>
@@ -148,7 +148,7 @@ export function ArtifactFilters({
               <DatePicker
                 id="from-date"
                 value={dateRange.from}
-                onChange={(d) => handleDateChange('from', d)}
+                onChange={(d) => handleDateChange("from", d)}
               />
             </div>
 
@@ -158,7 +158,7 @@ export function ArtifactFilters({
               <DatePicker
                 id="to-date"
                 value={dateRange.to}
-                onChange={(d) => handleDateChange('to', d)}
+                onChange={(d) => handleDateChange("to", d)}
               />
             </div>
           </AccordionContent>

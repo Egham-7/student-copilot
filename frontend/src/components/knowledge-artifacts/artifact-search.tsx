@@ -1,16 +1,16 @@
-import type React from 'react';
+import type React from "react";
 
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, X } from 'lucide-react';
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
 
 interface ArtifactSearchProps {
   onSearch: (query: string) => void;
 }
 
 export function ArtifactSearch({ onSearch }: ArtifactSearchProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,8 +18,8 @@ export function ArtifactSearch({ onSearch }: ArtifactSearchProps) {
   };
 
   const handleClear = () => {
-    setQuery('');
-    onSearch('');
+    setQuery("");
+    onSearch("");
   };
 
   return (

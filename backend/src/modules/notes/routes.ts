@@ -179,11 +179,12 @@ Return only the new content chunk as raw HTML. Do not wrap it in code fences.
 notesRoute.use("/:id/chat", timeout(60000));
 
 notesRoute.post("/:id/chat", async (c) => {
+  const id = Number(c.req.param("id"));
+  if (isNaN(id)) return c.text("Invalid ID", 400);
 
-    const id = Number(c.req.param("id"));
-    if (isNaN(id)) return c.text("Invalid ID", 400);
+  const { messages } = await c.req.json();
 
-    const inputPrompt = `
+  const systemPrompt = `
     You are an AI assistant engaging in a conversation about a note's content. Your task is to help users understand, analyze, and discuss the content of the note.
 
     Instructions:
@@ -203,41 +204,38 @@ notesRoute.post("/:id/chat", async (c) => {
     Respond naturally as a knowledgeable conversation partner who has read and understood the note thoroughly.
     `;
 
-
-    const result =  streamText({
-      model: openai("gpt-4.1-mini"),
-      tools: {
-        getRelevantContext: tool({
-          description: "Retrieve relevant content chunks for a note",
-          parameters: z.object({
-            noteId: z.number(),
-          }),
-          execute: async ({ noteId }) => {
-            const chunks = await notesService.retrieveNoteChunks(noteId);
-
-            return chunks.join("\n");
-          },
+  const result = streamText({
+    model: openai("gpt-4.1-mini"),
+    tools: {
+      getRelevantContext: tool({
+        description: "Retrieve relevant content chunks for a note",
+        parameters: z.object({
+          noteId: z.number(),
         }),
-        getNoteContent: tool({
-          description: "Retrieve the content of a note",
-          parameters: z.object({
-            noteId: z.number(),
-          }),
-          execute: async ({ noteId }) => {
-            const note = await notesService.getNoteById(noteId);
+        execute: async ({ noteId }) => {
+          const chunks = await notesService.retrieveNoteChunks(noteId);
 
-            return note.content;
-          },
+          return chunks.join("\n");
+        },
+      }),
+      getNoteContent: tool({
+        description: "Retrieve the content of a note",
+        parameters: z.object({
+          noteId: z.number(),
         }),
-      },
-      prompt: inputPrompt,
-      maxSteps: 5,
-    });
+        execute: async ({ noteId }) => {
+          const note = await notesService.getNoteById(noteId);
 
+          return note.content;
+        },
+      }),
+    },
+    system: systemPrompt,
+    maxSteps: 5,
+    messages,
+  });
 
-    return result.toDataStreamResponse();
-
-
-})
+  return result.toDataStreamResponse();
+});
 
 export default notesRoute;

@@ -1,6 +1,6 @@
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { notesService } from '@/services/notes';
-import { toast } from 'sonner';
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { notesService } from "@/services/notes";
+import { toast } from "sonner";
 
 export function useLinkKnowledgeArtifacts(noteId: number) {
   const queryClient = useQueryClient();
@@ -9,11 +9,11 @@ export function useLinkKnowledgeArtifacts(noteId: number) {
     mutationFn: (artifactIds: number[]) =>
       notesService.linkToArtifacts(noteId, artifactIds),
     onSuccess: (_, artifactIds) => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-      queryClient.invalidateQueries({ queryKey: ['notes', noteId] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["notes", noteId] });
       artifactIds.forEach((artifactId) => {
         queryClient.invalidateQueries({
-          queryKey: ['knowledge-artifacts', artifactId],
+          queryKey: ["knowledge-artifacts", artifactId],
         });
       });
     },

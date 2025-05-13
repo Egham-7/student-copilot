@@ -4,15 +4,15 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { ArrowUpDown } from 'lucide-react';
-import { KnowledgeArtifact } from '@/types/knowledge-artifacts';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
+import { KnowledgeArtifact } from "@/types/knowledge-artifacts";
 
 interface ArtifactSortProps {
   onSortChange: (
     key: keyof KnowledgeArtifact,
-    direction: 'asc' | 'desc',
+    direction: "asc" | "desc",
   ) => void;
   currentSort: {
     key: string;
@@ -22,8 +22,8 @@ interface ArtifactSortProps {
 
 export function ArtifactSort({ onSortChange, currentSort }: ArtifactSortProps) {
   const handleSortChange = (value: string) => {
-    const [key, direction] = value.split('-');
-    onSortChange(key as keyof KnowledgeArtifact, direction as 'asc' | 'desc');
+    const [key, direction] = value.split("-");
+    onSortChange(key as keyof KnowledgeArtifact, direction as "asc" | "desc");
   };
 
   const currentValue = `${currentSort.key}-${currentSort.direction}`;

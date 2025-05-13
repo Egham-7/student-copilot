@@ -3,9 +3,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { KnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { getFileIcon } from '@/utils/file-icons';
+} from "@/components/ui/tooltip";
+import { KnowledgeArtifact } from "@/types/knowledge-artifacts";
+import { getFileIcon } from "@/utils/file-icons";
 
 export function ArtifactList({
   artifacts,

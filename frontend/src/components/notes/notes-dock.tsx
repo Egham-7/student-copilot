@@ -1,17 +1,17 @@
-import React from 'react';
-import { BiBot } from 'react-icons/bi';
+import React from "react";
+import { BiBot } from "react-icons/bi";
 
-import { ModeToggle } from '@/components/mode-toggle';
-import { buttonVariants } from '@/components/ui/button';
+import { ModeToggle } from "@/components/mode-toggle";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-import { Dock, DockIcon } from '../magicui/dock';
-import { NoteChat } from './note-chat';
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { Dock, DockIcon } from "../magicui/dock";
+import { NoteChat } from "./note-chat";
 
 export function NoteDock() {
   const [isAgentOpen, setAgentOpen] = React.useState(false);
@@ -37,8 +37,8 @@ export function NoteDock() {
                     onClick={() => setAgentOpen(true)}
                     aria-label="Agent"
                     className={cn(
-                      buttonVariants({ variant: 'ghost', size: 'icon' }),
-                      'size-12 rounded-full bg-secondary text-secondary-foreground shadow-md hover:bg-accent hover:text-accent-foreground transition-colors',
+                      buttonVariants({ variant: "ghost", size: "icon" }),
+                      "size-12 rounded-full bg-secondary text-secondary-foreground shadow-md hover:bg-accent hover:text-accent-foreground transition-colors",
                     )}
                   >
                     <BiBot className="size-5" />

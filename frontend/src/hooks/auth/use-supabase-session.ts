@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from "react";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 type UseSupabaseSessionResult = {
   session: Session | null;

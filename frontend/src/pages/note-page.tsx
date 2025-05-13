@@ -1,30 +1,30 @@
-import { useCallback, useEffect, useRef } from 'react';
-import '@blocknote/core/fonts/inter.css';
-import { useCreateBlockNote } from '@blocknote/react';
-import { BlockNoteView } from '@blocknote/mantine';
-import '@blocknote/mantine/style.css';
+import { useCallback, useEffect, useRef } from "react";
+import "@blocknote/core/fonts/inter.css";
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import "@blocknote/mantine/style.css";
 import {
   getDefaultReactSlashMenuItems,
   SuggestionMenuController,
   DefaultReactSuggestionItem,
-} from '@blocknote/react';
-import { filterSuggestionItems, BlockNoteEditor } from '@blocknote/core';
-import { ImMagicWand } from 'react-icons/im';
-import { useParams } from '@tanstack/react-router';
-import { useNote } from '@/hooks/notes/use-note';
-import { useUpdateNote } from '@/hooks/notes/use-update-note';
-import { SkeletonItem } from '@/components/skeleton-item';
-import { ErrorState } from '@/components/error-display';
-import { useHotkeys } from '@mantine/hooks';
-import { useToast } from '@/hooks/use-toast';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
-import { NoteHeader } from '@/components/notes/note-header';
-import { debounce } from 'lodash';
-import { DebouncedFunc } from 'lodash';
-import { useGenerateAutoComplete } from '@/hooks/notes/use-generate-auto-complete';
+} from "@blocknote/react";
+import { filterSuggestionItems, BlockNoteEditor } from "@blocknote/core";
+import { ImMagicWand } from "react-icons/im";
+import { useParams } from "@tanstack/react-router";
+import { useNote } from "@/hooks/notes/use-note";
+import { useUpdateNote } from "@/hooks/notes/use-update-note";
+import { SkeletonItem } from "@/components/skeleton-item";
+import { ErrorState } from "@/components/error-display";
+import { useHotkeys } from "@mantine/hooks";
+import { useToast } from "@/hooks/use-toast";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
+import { NoteHeader } from "@/components/notes/note-header";
+import { debounce } from "lodash";
+import { DebouncedFunc } from "lodash";
+import { useGenerateAutoComplete } from "@/hooks/notes/use-generate-auto-complete";
 
 export default function NotePage() {
-  const { noteId } = useParams({ from: '/_app/notes/$noteId/' });
+  const { noteId } = useParams({ from: "/_app/notes/$noteId/" });
   const {
     data: note,
     isLoading: isNoteLoading,
@@ -83,7 +83,7 @@ export default function NotePage() {
 
   useEffect(() => {
     const parseAndReplaceBlocks = async () => {
-      const blocks = await noteEditor.tryParseHTMLToBlocks(note?.content ?? '');
+      const blocks = await noteEditor.tryParseHTMLToBlocks(note?.content ?? "");
       noteEditor.replaceBlocks(noteEditor.document, blocks);
     };
 
@@ -93,11 +93,11 @@ export default function NotePage() {
   // Manual save hotkey
   useHotkeys([
     [
-      'mod+S',
+      "mod+S",
       (e) => {
         e.preventDefault();
         saveNote();
-        toast({ title: 'Note saved' });
+        toast({ title: "Note saved" });
       },
     ],
   ]);
@@ -105,7 +105,7 @@ export default function NotePage() {
   const insertMagicItem = (
     editor: BlockNoteEditor,
   ): DefaultReactSuggestionItem => ({
-    title: 'Insert Magic Text',
+    title: "Insert Magic Text",
     onItemClick: async () => {
       if (!note) return;
 
@@ -116,15 +116,15 @@ export default function NotePage() {
       const lastBlock = editor.document.at(editor.document.length - 1);
 
       if (lastBlock) {
-        editor.insertBlocks(blocks, lastBlock, 'after');
+        editor.insertBlocks(blocks, lastBlock, "after");
       } else {
         editor.replaceBlocks(editor.document, blocks);
       }
     },
-    aliases: ['autocomplete', 'ai'],
-    group: 'AI',
+    aliases: ["autocomplete", "ai"],
+    group: "AI",
     icon: <ImMagicWand size={18} />,
-    subtext: 'Continue your note with AI-generated text',
+    subtext: "Continue your note with AI-generated text",
   });
 
   const getCustomSlashMenuItems = (
@@ -150,7 +150,7 @@ export default function NotePage() {
   if (isNoteError) {
     return (
       <ErrorState
-        message={`Failed to load note: ${noteError?.message ?? ''}`}
+        message={`Failed to load note: ${noteError?.message ?? ""}`}
         onRetry={refetch}
       />
     );

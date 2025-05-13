@@ -1,15 +1,15 @@
-import type { KnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { ArtifactCard } from './artifact-card';
-import { ArtifactTable } from './artifact-table';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import type { KnowledgeArtifact } from "@/types/knowledge-artifacts";
+import { ArtifactCard } from "./artifact-card";
+import { ArtifactTable } from "./artifact-table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ArtifactListProps {
   artifacts: KnowledgeArtifact[];
   isLoading: boolean;
   error?: string;
-  viewMode: 'grid' | 'table';
+  viewMode: "grid" | "table";
 }
 
 export function ArtifactGrid({
@@ -22,12 +22,12 @@ export function ArtifactGrid({
     return (
       <div
         className={
-          viewMode === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-            : ''
+          viewMode === "grid"
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            : ""
         }
       >
-        {viewMode === 'grid' ? (
+        {viewMode === "grid" ? (
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="border rounded-lg p-4 space-y-3">
               <Skeleton className="h-4 w-3/4" />
@@ -72,7 +72,7 @@ export function ArtifactGrid({
     );
   }
 
-  return viewMode === 'grid' ? (
+  return viewMode === "grid" ? (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {artifacts.map((artifact) => (
         <ArtifactCard key={artifact.id} artifact={artifact} />

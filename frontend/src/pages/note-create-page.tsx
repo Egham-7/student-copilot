@@ -1,5 +1,5 @@
-import { CreateNoteForm } from '@/components/notes/note-create-form';
-import { PlusCircle } from 'lucide-react';
+import { CreateNoteForm } from "@/components/notes/note-create-form";
+import { PlusCircle } from "lucide-react";
 
 export default function NoteCreatePage() {
   return (

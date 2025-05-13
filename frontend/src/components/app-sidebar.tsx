@@ -1,5 +1,5 @@
-import { FileText, Loader2, Trash2, Plus, Book } from 'lucide-react';
-import { Link, useRouter, useNavigate } from '@tanstack/react-router';
+import { FileText, Loader2, Trash2, Plus, Book } from "lucide-react";
+import { Link, useRouter, useNavigate } from "@tanstack/react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -11,14 +11,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuAction,
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { useNotes } from '@/hooks/notes/use-notes';
-import { SkeletonItem } from './skeleton-item';
-import { ErrorState } from './error-display';
-import { useDeleteNote } from '@/hooks/notes/use-delete-note';
-import { useCreateNote } from '@/hooks/notes/use-create-note';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { useNotes } from "@/hooks/notes/use-notes";
+import { SkeletonItem } from "./skeleton-item";
+import { ErrorState } from "./error-display";
+import { useDeleteNote } from "@/hooks/notes/use-delete-note";
+import { useCreateNote } from "@/hooks/notes/use-create-note";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 
 export function AppSidebar() {
   const { data: notes, isLoading, isError, refetch } = useNotes();
@@ -29,7 +29,7 @@ export function AppSidebar() {
   const router = useRouter();
   const navigate = useNavigate();
   const currentPath = router.state.location.pathname;
-  const isNavigating = router.state.status === 'pending';
+  const isNavigating = router.state.status === "pending";
 
   const handleDeleteNote = async (noteId: number) => {
     if (!notes?.length) return;
@@ -40,11 +40,11 @@ export function AppSidebar() {
 
     if (nextNote) {
       navigate({
-        to: '/notes/$noteId',
+        to: "/notes/$noteId",
         params: { noteId: nextNote.id.toString() },
       });
     } else {
-      navigate({ to: '/notes/create' });
+      navigate({ to: "/notes/create" });
     }
   };
 
@@ -53,13 +53,13 @@ export function AppSidebar() {
 
     try {
       const newNoteId = await createNote({
-        title: 'Untitled',
+        title: "Untitled",
         userId,
       });
 
       if (newNoteId) {
         navigate({
-          to: '/notes/$noteId',
+          to: "/notes/$noteId",
           params: { noteId: newNoteId.toString() },
         });
       }
@@ -146,7 +146,7 @@ export function AppSidebar() {
                   <SidebarMenuItem>
                     <Link to="/artifacts">
                       <SidebarMenuButton
-                        isActive={currentPath === '/artifacts'}
+                        isActive={currentPath === "/artifacts"}
                       >
                         <Book className="h-4 w-4 text-primary" />
                         Knowledge Artifacts

@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
-import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from "react";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
+import { useNavigate } from "@tanstack/react-router";
 
 export function Protected({ children }: { children: React.ReactNode }) {
   const { session, isLoading, error } = useSupabaseSession();
@@ -8,7 +8,7 @@ export function Protected({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !session) {
-      navigate({ to: '/login' });
+      navigate({ to: "/login" });
     }
   }, [isLoading, session, navigate]);
 

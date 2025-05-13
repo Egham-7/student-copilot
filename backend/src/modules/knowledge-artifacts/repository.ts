@@ -1,16 +1,16 @@
-import { db } from '@/db';
+import { db } from "@/db";
 import {
   knowledgeArtifacts,
   knowledgeArtifactChunks,
   notesToKnowledgeArtifacts,
-} from '@/db/schema';
+} from "@/db/schema";
 import {
   NewKnowledgeArtifact,
   UpdateKnowledgeArtifact,
   KnowledgeArtifactChunk,
   NewKnowledgeArtifactChunk,
-} from '@/types/knowledge-artifacts';
-import { cosineDistance, and, eq, gt, inArray, sql } from 'drizzle-orm';
+} from "@/types/knowledge-artifacts";
+import { cosineDistance, and, eq, gt, inArray, sql } from "drizzle-orm";
 
 export class KnowledgeArtifactsRepository {
   /** Get all knowledge artifacts */
@@ -20,7 +20,10 @@ export class KnowledgeArtifactsRepository {
 
   /** Get a single artifact by ID */
   async findById(id: number) {
-    return db.select().from(knowledgeArtifacts).where(eq(knowledgeArtifacts.id, id));
+    return db
+      .select()
+      .from(knowledgeArtifacts)
+      .where(eq(knowledgeArtifacts.id, id));
   }
 
   /** Create a new artifact */
@@ -30,12 +33,19 @@ export class KnowledgeArtifactsRepository {
 
   /** Update an existing artifact */
   async update(id: number, data: UpdateKnowledgeArtifact) {
-    return db.update(knowledgeArtifacts).set(data).where(eq(knowledgeArtifacts.id, id)).returning();
+    return db
+      .update(knowledgeArtifacts)
+      .set(data)
+      .where(eq(knowledgeArtifacts.id, id))
+      .returning();
   }
 
   /** Delete an artifact */
   async delete(id: number) {
-    return db.delete(knowledgeArtifacts).where(eq(knowledgeArtifacts.id, id)).returning();
+    return db
+      .delete(knowledgeArtifacts)
+      .where(eq(knowledgeArtifacts.id, id))
+      .returning();
   }
 
   /** Find all knowledge artifacts associated with a given note ID */
@@ -45,10 +55,13 @@ export class KnowledgeArtifactsRepository {
       .from(notesToKnowledgeArtifacts)
       .where(eq(notesToKnowledgeArtifacts.noteId, noteId));
 
-    const artifactIds = artifactLinks.map(link => link.artifactId);
+    const artifactIds = artifactLinks.map((link) => link.artifactId);
     if (artifactIds.length === 0) return [];
 
-    return db.select().from(knowledgeArtifacts).where(inArray(knowledgeArtifacts.id, artifactIds));
+    return db
+      .select()
+      .from(knowledgeArtifacts)
+      .where(inArray(knowledgeArtifacts.id, artifactIds));
   }
 
   /** Create multiple chunks for a knowledge artifact */
@@ -57,7 +70,9 @@ export class KnowledgeArtifactsRepository {
   }
 
   /** Get all chunks for a given artifact, ordered by index */
-  async findChunksByArtifactId(artifactId: number): Promise<KnowledgeArtifactChunk[]> {
+  async findChunksByArtifactId(
+    artifactId: number,
+  ): Promise<KnowledgeArtifactChunk[]> {
     return db
       .select()
       .from(knowledgeArtifactChunks)
@@ -65,7 +80,11 @@ export class KnowledgeArtifactsRepository {
       .orderBy(knowledgeArtifactChunks.index);
   }
 
-  async findRelevantChunksByArtifactId(artifactId: number, embedding: number[], limit = 5) {
+  async findRelevantChunksByArtifactId(
+    artifactId: number,
+    embedding: number[],
+    limit = 5,
+  ) {
     const similarity = sql<number>`1 - (${cosineDistance(knowledgeArtifactChunks.embedding, embedding)})`;
 
     const chunks = await db
@@ -74,8 +93,13 @@ export class KnowledgeArtifactsRepository {
         similarity,
       })
       .from(knowledgeArtifactChunks)
-      .where(and(eq(knowledgeArtifactChunks.artifactId, artifactId), gt(similarity, 0.5)))
-      .orderBy(t => t.similarity)
+      .where(
+        and(
+          eq(knowledgeArtifactChunks.artifactId, artifactId),
+          gt(similarity, 0.5),
+        ),
+      )
+      .orderBy((t) => t.similarity)
       .limit(limit);
 
     return chunks;

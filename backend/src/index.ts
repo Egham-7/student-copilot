@@ -1,22 +1,22 @@
-import { Hono } from 'hono';
+import { Hono } from "hono";
 
-import notesRoute from './modules/notes/routes';
+import notesRoute from "./modules/notes/routes";
 
-import { cors } from 'hono/cors';
-import artifactsRoute from './modules/knowledge-artifacts/routes';
+import { cors } from "hono/cors";
+import artifactsRoute from "./modules/knowledge-artifacts/routes";
 
 const app = new Hono();
 app.use(
-  '*',
+  "*",
   cors({
-    origin: ['http://localhost:3000'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    origin: ["http://localhost:3000"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
 );
 
-app.route('/notes', notesRoute);
+app.route("/notes", notesRoute);
 app.route("/knowledge-artifacts", artifactsRoute);
 
 export default {

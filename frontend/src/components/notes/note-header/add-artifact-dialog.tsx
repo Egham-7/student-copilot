@@ -5,37 +5,37 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { FileUpload } from '@/components/ui/file-upload';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { FileUpload } from "@/components/ui/file-upload";
 import {
   Form,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { usePresignUpload } from '@/hooks/knowledge-artifacts/use-presign-upload-url';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
-import { useCreateKnowledgeArtifact } from '@/hooks/knowledge-artifacts/use-create-knowledge-artifact';
-import { useLinkKnowledgeArtifacts } from '@/hooks/notes/use-link-knowledge-artifacts';
-import { useUnlinkKnowledgeArtifacts } from '@/hooks/notes/use-unlink-knowledge-artifacts';
-import { useKnowledgeArtifacts } from '@/hooks/knowledge-artifacts/use-knowledge-artifacts';
-import { Loader2, CheckCircle2 } from 'lucide-react';
-import { KnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { getFileIcon } from '@/utils/file-icons';
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { usePresignUpload } from "@/hooks/knowledge-artifacts/use-presign-upload-url";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
+import { useCreateKnowledgeArtifact } from "@/hooks/knowledge-artifacts/use-create-knowledge-artifact";
+import { useLinkKnowledgeArtifacts } from "@/hooks/notes/use-link-knowledge-artifacts";
+import { useUnlinkKnowledgeArtifacts } from "@/hooks/notes/use-unlink-knowledge-artifacts";
+import { useKnowledgeArtifacts } from "@/hooks/knowledge-artifacts/use-knowledge-artifacts";
+import { Loader2, CheckCircle2 } from "lucide-react";
+import { KnowledgeArtifact } from "@/types/knowledge-artifacts";
+import { getFileIcon } from "@/utils/file-icons";
 
 const artifactSchema = z.object({
   files: z
     .array(z.instanceof(File))
-    .min(1, 'Please upload at least one file.')
-    .refine((files) => files.every((file) => file.type === 'application/pdf'), {
-      message: 'Only PDF files are allowed.',
+    .min(1, "Please upload at least one file.")
+    .refine((files) => files.every((file) => file.type === "application/pdf"), {
+      message: "Only PDF files are allowed.",
     }),
 });
 
@@ -61,7 +61,7 @@ export function AddArtifactDialog({
 
   const { session, isLoading: isSessionLoading } = useSupabaseSession();
   const { data: allArtifacts = [] } = useKnowledgeArtifacts(
-    session?.user.id ?? '',
+    session?.user.id ?? "",
   );
 
   const presignUpload = usePresignUpload();
@@ -88,18 +88,18 @@ export function AddArtifactDialog({
           const key = `${session.user.id}/${file.name}`;
           const { signedUrl } = await presignUpload.mutateAsync({
             key,
-            bucket: 'knowledge-artifacts',
+            bucket: "knowledge-artifacts",
           });
 
           const res = await fetch(signedUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': file.type },
+            method: "PUT",
+            headers: { "Content-Type": file.type },
             body: file,
           });
 
           if (!res.ok) throw new Error(`Failed to upload: ${file.name}`);
 
-          const [name] = file.name.split('.');
+          const [name] = file.name.split(".");
           const artifact = await createArtifact.mutateAsync({
             title: name,
             fileType: file.type,
@@ -140,7 +140,7 @@ export function AddArtifactDialog({
           Add Artifacts to Note
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-lg">Add Knowledge Artifacts</DialogTitle>
         </DialogHeader>
@@ -163,13 +163,13 @@ export function AddArtifactDialog({
                       <FileUpload
                         onChange={field.onChange}
                         disabled={isSubmitting}
-                        allowedFileTypes={['application/pdf']}
+                        allowedFileTypes={["application/pdf"]}
                       />
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <DialogFooter>
+                <DialogFooter className="px-4 py-2">
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
@@ -177,7 +177,7 @@ export function AddArtifactDialog({
                         Uploading...
                       </>
                     ) : (
-                      'Save Artifacts'
+                      "Save Artifacts"
                     )}
                   </Button>
                 </DialogFooter>
@@ -220,7 +220,7 @@ function ArtifactListViewer({
       <h3 className="text-sm font-semibold text-muted-foreground mb-2">
         Your Artifacts
       </h3>
-      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+      <div className="space-y-2 overflow-y-auto pr-1">
         {allArtifacts.map((artifact) => {
           const isLinked = linkedArtifactIds.includes(artifact.id);
 
@@ -240,10 +240,10 @@ function ArtifactListViewer({
               <div className="flex items-center gap-3 overflow-hidden">
                 {getFileIcon(artifact.fileType)}
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-medium truncate max-w-xs">
+                  <span className="text-sm font-medium truncate">
                     {artifact.title}
                   </span>
-                  <span className="text-xs text-muted-foreground truncate">
+                  <span className="text-xs text-muted-foreground  w-96 truncate">
                     {artifact.filePath}
                   </span>
                 </div>

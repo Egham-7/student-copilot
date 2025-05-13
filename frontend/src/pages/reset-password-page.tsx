@@ -1,13 +1,13 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { PasswordResetForm } from '@/components/auth/password-reset/password-reset-form';
-import { Protected } from '@/layouts/protected-layout';
+} from "@/components/ui/card";
+import { PasswordResetForm } from "@/components/auth/password-reset/password-reset-form";
+import { Protected } from "@/layouts/protected-layout";
 
 export default function PasswordResetPage() {
   return (

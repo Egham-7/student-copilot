@@ -1,7 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -19,18 +19,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useCreateNote } from '@/hooks/notes/use-create-note';
-import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
-import { ErrorState } from '@/components/error-display';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useCreateNote } from "@/hooks/notes/use-create-note";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
+import { ErrorState } from "@/components/error-display";
 
 const formSchema = z.object({
   title: z.string().min(2, {
-    message: 'Note title must be at least 2 characters.',
+    message: "Note title must be at least 2 characters.",
   }),
 });
 
@@ -40,7 +40,7 @@ export function CreateNoteForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '',
+      title: "",
     },
   });
 
@@ -55,9 +55,9 @@ export function CreateNoteForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!session) {
       toast({
-        title: 'Not authenticated',
-        description: 'You must be logged in to create a note.',
-        variant: 'destructive',
+        title: "Not authenticated",
+        description: "You must be logged in to create a note.",
+        variant: "destructive",
       });
       return;
     }
@@ -70,25 +70,25 @@ export function CreateNoteForm() {
 
       if (!noteId) {
         toast({
-          title: 'Failed to create your note.',
-          variant: 'destructive',
+          title: "Failed to create your note.",
+          variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: 'Note created successfully',
-        description: 'Your new note has been created',
+        title: "Note created successfully",
+        description: "Your new note has been created",
       });
 
       form.reset();
       setIsOpen(false);
     } catch (error) {
-      console.error('Error: ', error);
+      console.error("Error: ", error);
       toast({
-        title: 'Error creating note',
-        description: 'An error occurred while creating your note',
-        variant: 'destructive',
+        title: "Error creating note",
+        description: "An error occurred while creating your note",
+        variant: "destructive",
       });
     }
   }
@@ -160,7 +160,7 @@ export function CreateNoteForm() {
             <DialogFooter>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? 'Creating Note...' : 'Create Note'}
+                {isLoading ? "Creating Note..." : "Create Note"}
               </Button>
             </DialogFooter>
           </form>

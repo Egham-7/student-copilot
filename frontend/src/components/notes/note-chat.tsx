@@ -1,83 +1,83 @@
-"use client"
+import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+import { useChat } from "@ai-sdk/react";
 
-import type React from "react"
-
-import { useEffect, useRef, useState } from "react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { motion } from "framer-motion"
-import { useChat } from "@ai-sdk/react"
-
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
-import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { FiUser, FiSearch, FiSend, FiMessageCircle, FiMove, FiLock } from "react-icons/fi"
-import { LuSparkles } from "react-icons/lu"
-import { Markdown } from "../markdown"
-import { NOTES_BASE } from "@/services/notes"
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import {
+  FiUser,
+  FiSearch,
+  FiSend,
+  FiMessageCircle,
+  FiMove,
+  FiLock,
+} from "react-icons/fi";
+import { LuSparkles } from "react-icons/lu";
+import { Markdown } from "../markdown";
+import { NOTES_BASE } from "@/services/notes";
 
 const formSchema = z.object({
   message: z.string().min(1, { message: "Type a message." }),
-})
+});
 
-type FormSchema = z.infer<typeof formSchema>
+type FormSchema = z.infer<typeof formSchema>;
 
 export function NoteChat({ noteId }: { noteId: number }) {
-  const [isDraggable, setIsDraggable] = useState(true)
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [isDraggable, setIsDraggable] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
     api: `${NOTES_BASE}/${noteId}/chat`,
     maxSteps: 3,
-  })
-  const isLoading = status !== "ready" && status !== "error"
+  });
+  const isLoading = status !== "ready" && status !== "error";
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: { message: "" },
-  })
+  });
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
-    })
-  }, [messages])
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Submit on Ctrl+Enter or Command+Enter
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-        if (input.trim()) handleSubmit(e as unknown as React.FormEvent)
-      }
-
-      // Focus input on / key when not already focused on an input
-      if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
-        e.preventDefault()
-        inputRef.current?.focus()
-      }
-    }
-
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [input, handleSubmit])
+    });
+  }, [messages]);
 
   // Format timestamp
   const formatTime = () => {
     return new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
-    })
-  }
+    });
+  };
 
   return (
     <Popover>
@@ -114,7 +114,9 @@ export function NoteChat({ noteId }: { noteId: number }) {
             <CardHeader className="flex items-center justify-between border-b border-border px-6 py-4">
               <div className="flex items-center gap-3">
                 <FiSearch className="w-5 h-5 text-muted-foreground" />
-                <CardTitle className="text-lg font-semibold">Note Chat</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  Note Chat
+                </CardTitle>
               </div>
               <Button
                 size="icon"
@@ -134,16 +136,28 @@ export function NoteChat({ noteId }: { noteId: number }) {
 
             <CardContent className="flex-1 px-6 py-4 overflow-hidden">
               <ScrollArea className="h-full">
-                <div className="space-y-6" role="log" aria-live="polite" aria-atomic="false">
+                <div
+                  className="space-y-6"
+                  role="log"
+                  aria-live="polite"
+                  aria-atomic="false"
+                >
                   {messages.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-6">
                       <LuSparkles className="w-10 h-10 text-primary/50 mb-2" />
-                      <h3 className="text-lg font-medium">Chat with your note</h3>
+                      <h3 className="text-lg font-medium">
+                        Chat with your note
+                      </h3>
                       <p className="text-sm text-muted-foreground mt-1 max-w-xs">
-                        Ask questions about this note or request summaries and insights.
+                        Ask questions about this note or request summaries and
+                        insights.
                       </p>
                       <div className="mt-4 text-xs text-muted-foreground/70">
-                        Press <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">/</kbd> to focus
+                        Press{" "}
+                        <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">
+                          /
+                        </kbd>{" "}
+                        to focus
                       </div>
                     </div>
                   )}
@@ -151,9 +165,14 @@ export function NoteChat({ noteId }: { noteId: number }) {
                   {messages.map((msg, i) => (
                     <div
                       key={msg.id}
-                      className={cn("flex items-start gap-3", msg.role === "user" ? "justify-end" : "justify-start")}
+                      className={cn(
+                        "flex items-start gap-3",
+                        msg.role === "user" ? "justify-end" : "justify-start",
+                      )}
                     >
-                      {msg.role === "assistant" && <LuSparkles className="w-5 h-5 text-primary mt-1" />}
+                      {msg.role === "assistant" && (
+                        <LuSparkles className="w-5 h-5 text-primary mt-1" />
+                      )}
                       <div
                         className={cn(
                           "rounded-xl px-4 py-3 max-w-[80%] text-base space-y-3",
@@ -171,29 +190,36 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                   content={part.text}
                                   id={`msg-${i}-${j}`}
                                 />
-                              )
+                              );
                             }
 
                             if (part.type === "reasoning") {
                               return (
                                 <div key={j} className="space-y-2">
-                                  <Badge variant="outline" className="font-medium">
+                                  <Badge
+                                    variant="outline"
+                                    className="font-medium"
+                                  >
                                     💡 Reasoning
                                   </Badge>
-                                  <p className="text-sm mt-1 leading-relaxed">{part.reasoning}</p>
+                                  <p className="text-sm mt-1 leading-relaxed">
+                                    {part.reasoning}
+                                  </p>
                                   <ul className="text-xs text-muted-foreground list-disc pl-5 mt-1 space-y-1.5">
                                     {part.details.map((detail, k) => (
                                       <li key={k} className="leading-relaxed">
-                                        {detail.type === "text" ? detail.text : "[REDACTED]"}
+                                        {detail.type === "text"
+                                          ? detail.text
+                                          : "[REDACTED]"}
                                       </li>
                                     ))}
                                   </ul>
                                 </div>
-                              )
+                              );
                             }
 
                             if (part.type === "tool-invocation") {
-                              const toolInvocation = part.toolInvocation
+                              const toolInvocation = part.toolInvocation;
                               return (
                                 <div
                                   key={j}
@@ -205,7 +231,8 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                         🔄
                                       </span>
                                       <span>
-                                        <strong>Preparing Tool:</strong> {toolInvocation.toolName}
+                                        <strong>Preparing Tool:</strong>{" "}
+                                        {toolInvocation.toolName}
                                       </span>
                                     </div>
                                   )}
@@ -216,7 +243,8 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                         🛠
                                       </span>
                                       <span>
-                                        <strong>Tool Call:</strong> {toolInvocation.toolName}
+                                        <strong>Tool Call:</strong>{" "}
+                                        {toolInvocation.toolName}
                                       </span>
                                     </div>
                                   )}
@@ -228,7 +256,8 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                           ✅
                                         </span>
                                         <span>
-                                          <strong>Finished executing:</strong> {toolInvocation.toolName}
+                                          <strong>Finished executing:</strong>{" "}
+                                          {toolInvocation.toolName}
                                         </span>
                                       </div>
 
@@ -236,8 +265,13 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                         <div className="text-xs mt-1 pl-6">
                                           <strong>Result:</strong>{" "}
                                           <code className="bg-muted/50 px-1.5 py-0.5 rounded whitespace-pre-wrap block mt-1 p-2 max-h-[150px] overflow-auto">
-                                            {typeof toolInvocation.result === "object"
-                                              ? JSON.stringify(toolInvocation.result, null, 2)
+                                            {typeof toolInvocation.result ===
+                                            "object"
+                                              ? JSON.stringify(
+                                                  toolInvocation.result,
+                                                  null,
+                                                  2,
+                                                )
                                               : String(toolInvocation.result)}
                                           </code>
                                         </div>
@@ -245,7 +279,7 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                     </div>
                                   )}
                                 </div>
-                              )
+                              );
                             }
 
                             if (part.type === "source") {
@@ -269,7 +303,7 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                     </a>
                                   </span>
                                 </div>
-                              )
+                              );
                             }
 
                             if (part.type === "file") {
@@ -294,7 +328,7 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                     </a>
                                   </span>
                                 </div>
-                              )
+                              );
                             }
 
                             if (part.type === "step-start") {
@@ -303,20 +337,25 @@ export function NoteChat({ noteId }: { noteId: number }) {
                                   key={j}
                                   className="text-xs italic text-accent-foreground bg-accent/10 px-2 py-1 rounded"
                                 >
-                                  🪄 <strong>Step started:</strong> Preparing the next action...
+                                  🪄 <strong>Step started:</strong> Preparing
+                                  the next action...
                                 </div>
-                              )
+                              );
                             }
 
-                            return null
+                            return null;
                           })
                         ) : (
                           <Markdown content={msg.content} id={`msg-${i}`} />
                         )}
 
-                        <div className="text-[10px] text-muted-foreground/70 mt-1 text-right">{formatTime()}</div>
+                        <div className="text-[10px] text-muted-foreground/70 mt-1 text-right">
+                          {formatTime()}
+                        </div>
                       </div>
-                      {msg.role === "user" && <FiUser className="w-5 h-5 text-muted-foreground mt-1" />}
+                      {msg.role === "user" && (
+                        <FiUser className="w-5 h-5 text-muted-foreground mt-1" />
+                      )}
                     </div>
                   ))}
 
@@ -349,7 +388,10 @@ export function NoteChat({ noteId }: { noteId: number }) {
 
             <CardFooter className="border-t border-border rounded-b-2xl px-4 py-3 bg-popover/80">
               <Form {...form}>
-                <form onSubmit={handleSubmit} className="w-full flex items-center gap-2">
+                <form
+                  onSubmit={handleSubmit}
+                  className="w-full flex items-center gap-2"
+                >
                   <FormField
                     control={form.control}
                     name="message"
@@ -381,7 +423,8 @@ export function NoteChat({ noteId }: { noteId: number }) {
                     disabled={isLoading}
                     className={cn(
                       "text-muted-foreground hover:text-primary hover:bg-primary/10 active:scale-95 transition-all",
-                      (!input.trim() || isLoading) && "opacity-50 pointer-events-none",
+                      (!input.trim() || isLoading) &&
+                        "opacity-50 pointer-events-none",
                     )}
                     aria-label="Send message"
                   >
@@ -394,5 +437,5 @@ export function NoteChat({ noteId }: { noteId: number }) {
         </motion.div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils';
-import { useRef, useState } from 'react';
-import { motion } from 'motion/react';
-import { IconUpload } from '@tabler/icons-react';
-import { useDropzone } from 'react-dropzone';
+import { cn } from "@/lib/utils";
+import { useRef, useState } from "react";
+import { motion } from "motion/react";
+import { IconUpload } from "@tabler/icons-react";
+import { useDropzone } from "react-dropzone";
 
-import { extension } from 'mime-types';
+import { extension } from "mime-types";
 
 type FileUploadProps = {
   onChange: (files: File[]) => void;
@@ -52,7 +52,7 @@ export const FileUpload = ({
       if (!disabled) handleFileChange(acceptedFiles);
     },
     onDropRejected: (fileRejections) => {
-      if (!disabled) console.warn('Rejected:', fileRejections);
+      if (!disabled) console.warn("Rejected:", fileRejections);
     },
   });
 
@@ -60,10 +60,10 @@ export const FileUpload = ({
     <div className="w-full" {...getRootProps()}>
       <motion.div
         onClick={handleClick}
-        whileHover={!disabled ? 'animate' : undefined}
+        whileHover={!disabled ? "animate" : undefined}
         className={cn(
-          'p-10 group/file block rounded-lg w-full relative overflow-hidden transition cursor-pointer',
-          disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
+          "p-10 group/file block rounded-lg w-full relative overflow-hidden transition cursor-pointer",
+          disabled && "opacity-50 cursor-not-allowed pointer-events-none",
         )}
       >
         <input
@@ -71,7 +71,7 @@ export const FileUpload = ({
           id="file-upload-handle"
           type="file"
           disabled={disabled}
-          accept={allowedFileTypes?.join(',')}
+          accept={allowedFileTypes?.join(",")}
           onChange={(e) =>
             !disabled && handleFileChange(Array.from(e.target.files || []))
           }
@@ -95,10 +95,10 @@ export const FileUpload = ({
               files.map((file, idx) => (
                 <motion.div
                   key={`file-${idx}`}
-                  layoutId={idx === 0 ? 'file-upload' : `file-upload-${idx}`}
+                  layoutId={idx === 0 ? "file-upload" : `file-upload-${idx}`}
                   className={cn(
-                    'relative overflow-hidden z-40 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md shadow-sm',
-                    'bg-[var(--color-card)] text-[var(--color-card-foreground)]',
+                    "relative overflow-hidden z-40 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md shadow-sm",
+                    "bg-[var(--color-card)] text-[var(--color-card-foreground)]",
                   )}
                 >
                   <div className="flex justify-between w-full items-center gap-4">
@@ -135,7 +135,7 @@ export const FileUpload = ({
                       layout
                       className="text-[var(--color-muted-foreground)]"
                     >
-                      modified{' '}
+                      modified{" "}
                       {new Date(file.lastModified).toLocaleDateString()}
                     </motion.p>
                   </div>
@@ -147,13 +147,13 @@ export const FileUpload = ({
                 layoutId="file-upload"
                 variants={mainVariant}
                 transition={{
-                  type: 'spring',
+                  type: "spring",
                   stiffness: 300,
                   damping: 20,
                 }}
                 className={cn(
-                  'relative group-hover/file:shadow-2xl z-40 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md',
-                  'bg-[var(--color-card)] text-[var(--color-muted-foreground)] shadow-[0px_10px_50px_rgba(0,0,0,0.1)]',
+                  "relative group-hover/file:shadow-2xl z-40 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md",
+                  "bg-[var(--color-card)] text-[var(--color-muted-foreground)] shadow-[0px_10px_50px_rgba(0,0,0,0.1)]",
                 )}
               >
                 {isDragActive ? (
@@ -217,10 +217,10 @@ export function GridPattern() {
             <div
               key={`${col}-${row}`}
               className={cn(
-                'w-10 h-10 flex shrink-0 rounded-[2px]',
+                "w-10 h-10 flex shrink-0 rounded-[2px]",
                 index % 2 === 0
-                  ? 'bg-[var(--color-muted)]'
-                  : 'bg-[var(--color-muted)] shadow-[inset_0_0_1px_3px_var(--color-background)]',
+                  ? "bg-[var(--color-muted)]"
+                  : "bg-[var(--color-muted)] shadow-[inset_0_0_1px_3px_var(--color-background)]",
               )}
             />
           );

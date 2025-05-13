@@ -1,13 +1,13 @@
-import { useState, useMemo, useCallback } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArtifactFilters } from './artifact-filters';
-import { ArtifactGrid } from './artifact-grid';
-import { ArtifactSearch } from './artifact-search';
-import { ArtifactSort } from './artifact-sort';
-import type { KnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { useKnowledgeArtifacts } from '@/hooks/knowledge-artifacts/use-knowledge-artifacts';
-import { useSupabaseSession } from '@/hooks/auth/use-supabase-session';
-import { getFileType } from '@/utils/file-icons';
+import { useState, useMemo, useCallback } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArtifactFilters } from "./artifact-filters";
+import { ArtifactGrid } from "./artifact-grid";
+import { ArtifactSearch } from "./artifact-search";
+import { ArtifactSort } from "./artifact-sort";
+import type { KnowledgeArtifact } from "@/types/knowledge-artifacts";
+import { useKnowledgeArtifacts } from "@/hooks/knowledge-artifacts/use-knowledge-artifacts";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
+import { getFileType } from "@/utils/file-icons";
 
 interface ActiveFilters {
   fileTypes: string[];
@@ -21,12 +21,12 @@ type SortKey = keyof KnowledgeArtifact;
 
 interface SortConfig {
   key: SortKey;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
 
 export function KnowledgeArtifactsManager() {
   const { session, isLoading: isSessionLoading } = useSupabaseSession();
-  const userId = session?.user.id ?? '';
+  const userId = session?.user.id ?? "";
 
   const {
     data: artifacts = [],
@@ -38,16 +38,16 @@ export function KnowledgeArtifactsManager() {
 
   const isLoading = isSessionLoading || isArtifactsLoading;
 
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
     fileTypes: [],
     dateRange: { from: null, to: null },
   });
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    key: 'createdAt',
-    direction: 'desc',
+    key: "createdAt",
+    direction: "desc",
   });
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -58,14 +58,14 @@ export function KnowledgeArtifactsManager() {
   }, []);
 
   const handleSortChange = useCallback(
-    (key: SortKey, direction: 'asc' | 'desc') => {
+    (key: SortKey, direction: "asc" | "desc") => {
       setSortConfig({ key, direction });
     },
     [],
   );
 
   const handleViewModeChange = useCallback((mode: string) => {
-    setViewMode(mode as 'grid' | 'table');
+    setViewMode(mode as "grid" | "table");
   }, []);
 
   const fileTypeOptions = useMemo(
@@ -106,23 +106,23 @@ export function KnowledgeArtifactsManager() {
         const aVal = a[key];
         const bVal = b[key];
 
-        if (typeof aVal === 'string' && typeof bVal === 'string') {
-          return direction === 'asc'
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return direction === "asc"
             ? aVal.localeCompare(bVal)
             : bVal.localeCompare(aVal);
         }
 
         if (
-          (key === 'createdAt' || key === 'updatedAt') &&
-          typeof aVal === 'string' &&
-          typeof bVal === 'string'
+          (key === "createdAt" || key === "updatedAt") &&
+          typeof aVal === "string" &&
+          typeof bVal === "string"
         ) {
           const diff = new Date(aVal).getTime() - new Date(bVal).getTime();
-          return direction === 'asc' ? diff : -diff;
+          return direction === "asc" ? diff : -diff;
         }
 
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return direction === 'asc' ? aVal - bVal : bVal - aVal;
+        if (typeof aVal === "number" && typeof bVal === "number") {
+          return direction === "asc" ? aVal - bVal : bVal - aVal;
         }
 
         return 0;

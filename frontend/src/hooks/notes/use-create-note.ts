@@ -1,7 +1,7 @@
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { notesService } from '@/services/notes';
-import { NoteCreate } from '@/types/notes';
-import { toast } from 'sonner';
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { notesService } from "@/services/notes";
+import { NoteCreate } from "@/types/notes";
+import { toast } from "sonner";
 
 export const useCreateNote = () => {
   const queryClient = useQueryClient();
@@ -16,7 +16,7 @@ export const useCreateNote = () => {
       return note.id;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
     onError: (error) => {
       toast.error(error.message);

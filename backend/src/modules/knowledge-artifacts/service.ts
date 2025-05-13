@@ -1,10 +1,13 @@
-import { NewKnowledgeArtifact, UpdateKnowledgeArtifact } from '@/types/knowledge-artifacts';
-import { KnowledgeArtifactsRepository } from './repository';
-import { PDFArtifactLoader } from '../artifact-loaders/services/pdf';
-import { ArtifactLoader } from '../artifact-loaders/types';
+import {
+  NewKnowledgeArtifact,
+  UpdateKnowledgeArtifact,
+} from "@/types/knowledge-artifacts";
+import { KnowledgeArtifactsRepository } from "./repository";
+import { PDFArtifactLoader } from "../artifact-loaders/services/pdf";
+import { ArtifactLoader } from "../artifact-loaders/types";
 
 const artifactLoaders: Record<string, ArtifactLoader> = {
-  'application/pdf': new PDFArtifactLoader(),
+  "application/pdf": new PDFArtifactLoader(),
 };
 
 export class KnowledgeArtifactsService {
@@ -16,7 +19,7 @@ export class KnowledgeArtifactsService {
 
   async getById(id: number) {
     const result = await this.repo.findById(id);
-    if (!result.length) throw new Error('Knowledge Artifact not found');
+    if (!result.length) throw new Error("Knowledge Artifact not found");
     return result[0];
   }
 
@@ -31,7 +34,7 @@ export class KnowledgeArtifactsService {
 
     // Calculate aggregated embedding (e.g., average of chunk embeddings)
     const aggregate = chunks
-      .map(chunk => chunk.embedding)
+      .map((chunk) => chunk.embedding)
       .reduce((acc, emb) => acc.map((v, j) => v + emb[j] / chunks.length));
 
     // Update artifact with aggregated embedding
@@ -45,11 +48,11 @@ export class KnowledgeArtifactsService {
 
   async update(id: number, data: UpdateKnowledgeArtifact) {
     if (!data.filePath || !data.fileType) {
-      throw new Error('Missing filePath or fileType');
+      throw new Error("Missing filePath or fileType");
     }
 
     const existing = await this.repo.findById(id);
-    if (!existing.length) throw new Error('Knowledge Artifact not found');
+    if (!existing.length) throw new Error("Knowledge Artifact not found");
 
     const loader = artifactLoaders[data.fileType];
     if (!loader) throw new Error(`Unsupported file type: ${data.fileType}`);
@@ -59,7 +62,7 @@ export class KnowledgeArtifactsService {
 
     // Recalculate aggregated embedding
     const aggregate = chunks
-      .map(chunk => chunk.embedding)
+      .map((chunk) => chunk.embedding)
       .reduce((acc, emb) => acc.map((v, j) => v + emb[j] / chunks.length));
 
     // Update artifact record with new metadata and embedding
@@ -79,19 +82,25 @@ export class KnowledgeArtifactsService {
 
   async getChunksByArtifactId(artifactId: number) {
     const result = await this.repo.findChunksByArtifactId(artifactId);
-    if (!result.length) throw new Error('Knowledge Artifact chunks not found');
+    if (!result.length) throw new Error("Knowledge Artifact chunks not found");
     return result;
   }
 
-  async findRelevantChunksByArtifactId(artifactId: number, embedding: number[]) {
-    const result = await this.repo.findRelevantChunksByArtifactId(artifactId, embedding);
-    if (!result.length) throw new Error('Knowledge Artifact chunks not found');
+  async findRelevantChunksByArtifactId(
+    artifactId: number,
+    embedding: number[],
+  ) {
+    const result = await this.repo.findRelevantChunksByArtifactId(
+      artifactId,
+      embedding,
+    );
+    if (!result.length) throw new Error("Knowledge Artifact chunks not found");
     return result;
   }
 
   async delete(id: number) {
     const [deleted] = await this.repo.delete(id);
-    if (!deleted) throw new Error('Knowledge Artifact not found');
+    if (!deleted) throw new Error("Knowledge Artifact not found");
     await this.repo.deleteChunksByArtifactId(id);
     return deleted;
   }
