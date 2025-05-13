@@ -16,6 +16,7 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import { supabase } from "@/lib/supabase";
 
 const passwordSchema = z
   .object({
@@ -59,9 +60,8 @@ export function PasswordResetForm() {
   } = form;
 
   const onSubmit = async (data: FormValues) => {
-    console.log("Password reset data:", data);
 
-    // await your API call here
+    await supabase.auth.updateUser({password:data.password})
     toast({
       title: "Success",
       description: "Your password has been reset successfully.",

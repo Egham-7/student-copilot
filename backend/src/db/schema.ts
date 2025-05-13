@@ -7,7 +7,28 @@ import {
   index,
   integer,
   uuid,
+  AnyPgColumn,
 } from "drizzle-orm/pg-core";
+
+export const folders = pgTable(
+  "folders",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    parentId: integer("parent_id").references((): AnyPgColumn => folders.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    userId: uuid("user_id").notNull(),
+  },
+  (table) => [
+    // Index for faster lookup by user
+    index("idx_folders_user_id").on(table.userId),
+  ],
+);
 
 export const notes = pgTable(
   "notes",
@@ -23,12 +44,16 @@ export const notes = pgTable(
       .notNull()
       .defaultNow(),
     userId: uuid("user_id").notNull(),
+    // Add this new column - null means the note isn't in any folder
+    folderId: integer("folder_id").references(() => folders.id, { onDelete: "set null" }),
   },
   (table) => [
     index("idx_notes_embedding").using(
       "hnsw",
       table.embedding.op("vector_cosine_ops"),
     ),
+    // Add an index for faster lookup of notes in a folder
+    index("idx_notes_folder_id").on(table.folderId),
   ],
 );
 

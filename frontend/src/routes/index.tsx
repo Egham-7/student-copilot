@@ -1,4 +1,4 @@
-import HomePage from "@/pages/home-page";
+import LandingPage from "@/pages/landing-page";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -6,5 +6,5 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  return <HomePage />;
+  return <LandingPage/>;
 }

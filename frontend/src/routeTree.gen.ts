@@ -10,265 +10,287 @@
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as ResetPasswordImport } from "./routes/reset-password";
-import { Route as ForgotPasswordImport } from "./routes/forgot-password";
-import { Route as AuthImport } from "./routes/_auth";
-import { Route as AppImport } from "./routes/_app";
-import { Route as IndexImport } from "./routes/index";
-import { Route as AuthSignupIndexImport } from "./routes/_auth/signup/index";
-import { Route as AuthLoginIndexImport } from "./routes/_auth/login/index";
-import { Route as AppArtifactsIndexImport } from "./routes/_app/artifacts/index";
-import { Route as AppNotesCreateIndexImport } from "./routes/_app/notes/create/index";
-import { Route as AppNotesNoteIdIndexImport } from "./routes/_app/notes/$noteId/index";
+import { Route as rootRoute } from './routes/__root'
+import { Route as ResetPasswordImport } from './routes/reset-password'
+import { Route as ForgotPasswordImport } from './routes/forgot-password'
+import { Route as AuthImport } from './routes/_auth'
+import { Route as AppImport } from './routes/_app'
+import { Route as IndexImport } from './routes/index'
+import { Route as AuthSignupIndexImport } from './routes/_auth/signup/index'
+import { Route as AuthLoginIndexImport } from './routes/_auth/login/index'
+import { Route as AppHomeIndexImport } from './routes/_app/home/index'
+import { Route as AppArtifactsIndexImport } from './routes/_app/artifacts/index'
+import { Route as AppNotesCreateIndexImport } from './routes/_app/notes/create/index'
+import { Route as AppNotesNoteIdIndexImport } from './routes/_app/notes/$noteId/index'
 
 // Create/Update Routes
 
 const ResetPasswordRoute = ResetPasswordImport.update({
-  id: "/reset-password",
-  path: "/reset-password",
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const ForgotPasswordRoute = ForgotPasswordImport.update({
-  id: "/forgot-password",
-  path: "/forgot-password",
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AuthRoute = AuthImport.update({
-  id: "/_auth",
+  id: '/_auth',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AppRoute = AppImport.update({
-  id: "/_app",
+  id: '/_app',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const IndexRoute = IndexImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AuthSignupIndexRoute = AuthSignupIndexImport.update({
-  id: "/signup/",
-  path: "/signup/",
+  id: '/signup/',
+  path: '/signup/',
   getParentRoute: () => AuthRoute,
-} as any);
+} as any)
 
 const AuthLoginIndexRoute = AuthLoginIndexImport.update({
-  id: "/login/",
-  path: "/login/",
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => AuthRoute,
-} as any);
+} as any)
+
+const AppHomeIndexRoute = AppHomeIndexImport.update({
+  id: '/home/',
+  path: '/home/',
+  getParentRoute: () => AppRoute,
+} as any)
 
 const AppArtifactsIndexRoute = AppArtifactsIndexImport.update({
-  id: "/artifacts/",
-  path: "/artifacts/",
+  id: '/artifacts/',
+  path: '/artifacts/',
   getParentRoute: () => AppRoute,
-} as any);
+} as any)
 
 const AppNotesCreateIndexRoute = AppNotesCreateIndexImport.update({
-  id: "/notes/create/",
-  path: "/notes/create/",
+  id: '/notes/create/',
+  path: '/notes/create/',
   getParentRoute: () => AppRoute,
-} as any);
+} as any)
 
 const AppNotesNoteIdIndexRoute = AppNotesNoteIdIndexImport.update({
-  id: "/notes/$noteId/",
-  path: "/notes/$noteId/",
+  id: '/notes/$noteId/',
+  path: '/notes/$noteId/',
   getParentRoute: () => AppRoute,
-} as any);
+} as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/_app": {
-      id: "/_app";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof AppImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/_auth": {
-      id: "/_auth";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof AuthImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/forgot-password": {
-      id: "/forgot-password";
-      path: "/forgot-password";
-      fullPath: "/forgot-password";
-      preLoaderRoute: typeof ForgotPasswordImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/reset-password": {
-      id: "/reset-password";
-      path: "/reset-password";
-      fullPath: "/reset-password";
-      preLoaderRoute: typeof ResetPasswordImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/_app/artifacts/": {
-      id: "/_app/artifacts/";
-      path: "/artifacts";
-      fullPath: "/artifacts";
-      preLoaderRoute: typeof AppArtifactsIndexImport;
-      parentRoute: typeof AppImport;
-    };
-    "/_auth/login/": {
-      id: "/_auth/login/";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof AuthLoginIndexImport;
-      parentRoute: typeof AuthImport;
-    };
-    "/_auth/signup/": {
-      id: "/_auth/signup/";
-      path: "/signup";
-      fullPath: "/signup";
-      preLoaderRoute: typeof AuthSignupIndexImport;
-      parentRoute: typeof AuthImport;
-    };
-    "/_app/notes/$noteId/": {
-      id: "/_app/notes/$noteId/";
-      path: "/notes/$noteId";
-      fullPath: "/notes/$noteId";
-      preLoaderRoute: typeof AppNotesNoteIdIndexImport;
-      parentRoute: typeof AppImport;
-    };
-    "/_app/notes/create/": {
-      id: "/_app/notes/create/";
-      path: "/notes/create";
-      fullPath: "/notes/create";
-      preLoaderRoute: typeof AppNotesCreateIndexImport;
-      parentRoute: typeof AppImport;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordImport
+      parentRoute: typeof rootRoute
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordImport
+      parentRoute: typeof rootRoute
+    }
+    '/_app/artifacts/': {
+      id: '/_app/artifacts/'
+      path: '/artifacts'
+      fullPath: '/artifacts'
+      preLoaderRoute: typeof AppArtifactsIndexImport
+      parentRoute: typeof AppImport
+    }
+    '/_app/home/': {
+      id: '/_app/home/'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AppHomeIndexImport
+      parentRoute: typeof AppImport
+    }
+    '/_auth/login/': {
+      id: '/_auth/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/signup/': {
+      id: '/_auth/signup/'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof AuthSignupIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_app/notes/$noteId/': {
+      id: '/_app/notes/$noteId/'
+      path: '/notes/$noteId'
+      fullPath: '/notes/$noteId'
+      preLoaderRoute: typeof AppNotesNoteIdIndexImport
+      parentRoute: typeof AppImport
+    }
+    '/_app/notes/create/': {
+      id: '/_app/notes/create/'
+      path: '/notes/create'
+      fullPath: '/notes/create'
+      preLoaderRoute: typeof AppNotesCreateIndexImport
+      parentRoute: typeof AppImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface AppRouteChildren {
-  AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute;
-  AppNotesNoteIdIndexRoute: typeof AppNotesNoteIdIndexRoute;
-  AppNotesCreateIndexRoute: typeof AppNotesCreateIndexRoute;
+  AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute
+  AppHomeIndexRoute: typeof AppHomeIndexRoute
+  AppNotesNoteIdIndexRoute: typeof AppNotesNoteIdIndexRoute
+  AppNotesCreateIndexRoute: typeof AppNotesCreateIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppArtifactsIndexRoute: AppArtifactsIndexRoute,
+  AppHomeIndexRoute: AppHomeIndexRoute,
   AppNotesNoteIdIndexRoute: AppNotesNoteIdIndexRoute,
   AppNotesCreateIndexRoute: AppNotesCreateIndexRoute,
-};
+}
 
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface AuthRouteChildren {
-  AuthLoginIndexRoute: typeof AuthLoginIndexRoute;
-  AuthSignupIndexRoute: typeof AuthSignupIndexRoute;
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
+  AuthSignupIndexRoute: typeof AuthSignupIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthSignupIndexRoute: AuthSignupIndexRoute,
-};
+}
 
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren);
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "": typeof AuthRouteWithChildren;
-  "/forgot-password": typeof ForgotPasswordRoute;
-  "/reset-password": typeof ResetPasswordRoute;
-  "/artifacts": typeof AppArtifactsIndexRoute;
-  "/login": typeof AuthLoginIndexRoute;
-  "/signup": typeof AuthSignupIndexRoute;
-  "/notes/$noteId": typeof AppNotesNoteIdIndexRoute;
-  "/notes/create": typeof AppNotesCreateIndexRoute;
+  '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/artifacts': typeof AppArtifactsIndexRoute
+  '/home': typeof AppHomeIndexRoute
+  '/login': typeof AuthLoginIndexRoute
+  '/signup': typeof AuthSignupIndexRoute
+  '/notes/$noteId': typeof AppNotesNoteIdIndexRoute
+  '/notes/create': typeof AppNotesCreateIndexRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "": typeof AuthRouteWithChildren;
-  "/forgot-password": typeof ForgotPasswordRoute;
-  "/reset-password": typeof ResetPasswordRoute;
-  "/artifacts": typeof AppArtifactsIndexRoute;
-  "/login": typeof AuthLoginIndexRoute;
-  "/signup": typeof AuthSignupIndexRoute;
-  "/notes/$noteId": typeof AppNotesNoteIdIndexRoute;
-  "/notes/create": typeof AppNotesCreateIndexRoute;
+  '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/artifacts': typeof AppArtifactsIndexRoute
+  '/home': typeof AppHomeIndexRoute
+  '/login': typeof AuthLoginIndexRoute
+  '/signup': typeof AuthSignupIndexRoute
+  '/notes/$noteId': typeof AppNotesNoteIdIndexRoute
+  '/notes/create': typeof AppNotesCreateIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/": typeof IndexRoute;
-  "/_app": typeof AppRouteWithChildren;
-  "/_auth": typeof AuthRouteWithChildren;
-  "/forgot-password": typeof ForgotPasswordRoute;
-  "/reset-password": typeof ResetPasswordRoute;
-  "/_app/artifacts/": typeof AppArtifactsIndexRoute;
-  "/_auth/login/": typeof AuthLoginIndexRoute;
-  "/_auth/signup/": typeof AuthSignupIndexRoute;
-  "/_app/notes/$noteId/": typeof AppNotesNoteIdIndexRoute;
-  "/_app/notes/create/": typeof AppNotesCreateIndexRoute;
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_auth': typeof AuthRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_app/artifacts/': typeof AppArtifactsIndexRoute
+  '/_app/home/': typeof AppHomeIndexRoute
+  '/_auth/login/': typeof AuthLoginIndexRoute
+  '/_auth/signup/': typeof AuthSignupIndexRoute
+  '/_app/notes/$noteId/': typeof AppNotesNoteIdIndexRoute
+  '/_app/notes/create/': typeof AppNotesCreateIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | ""
-    | "/forgot-password"
-    | "/reset-password"
-    | "/artifacts"
-    | "/login"
-    | "/signup"
-    | "/notes/$noteId"
-    | "/notes/create";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | ''
+    | '/forgot-password'
+    | '/reset-password'
+    | '/artifacts'
+    | '/home'
+    | '/login'
+    | '/signup'
+    | '/notes/$noteId'
+    | '/notes/create'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | ""
-    | "/forgot-password"
-    | "/reset-password"
-    | "/artifacts"
-    | "/login"
-    | "/signup"
-    | "/notes/$noteId"
-    | "/notes/create";
+    | '/'
+    | ''
+    | '/forgot-password'
+    | '/reset-password'
+    | '/artifacts'
+    | '/home'
+    | '/login'
+    | '/signup'
+    | '/notes/$noteId'
+    | '/notes/create'
   id:
-    | "__root__"
-    | "/"
-    | "/_app"
-    | "/_auth"
-    | "/forgot-password"
-    | "/reset-password"
-    | "/_app/artifacts/"
-    | "/_auth/login/"
-    | "/_auth/signup/"
-    | "/_app/notes/$noteId/"
-    | "/_app/notes/create/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_auth'
+    | '/forgot-password'
+    | '/reset-password'
+    | '/_app/artifacts/'
+    | '/_app/home/'
+    | '/_auth/login/'
+    | '/_auth/signup/'
+    | '/_app/notes/$noteId/'
+    | '/_app/notes/create/'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AppRoute: typeof AppRouteWithChildren;
-  AuthRoute: typeof AuthRouteWithChildren;
-  ForgotPasswordRoute: typeof ForgotPasswordRoute;
-  ResetPasswordRoute: typeof ResetPasswordRoute;
+  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -277,11 +299,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-};
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -303,6 +325,7 @@ export const routeTree = rootRoute
       "filePath": "_app.tsx",
       "children": [
         "/_app/artifacts/",
+        "/_app/home/",
         "/_app/notes/$noteId/",
         "/_app/notes/create/"
       ]
@@ -322,6 +345,10 @@ export const routeTree = rootRoute
     },
     "/_app/artifacts/": {
       "filePath": "_app/artifacts/index.tsx",
+      "parent": "/_app"
+    },
+    "/_app/home/": {
+      "filePath": "_app/home/index.tsx",
       "parent": "/_app"
     },
     "/_auth/login/": {

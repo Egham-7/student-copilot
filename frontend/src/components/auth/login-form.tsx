@@ -47,7 +47,7 @@ export function LoginForm() {
         return;
       }
 
-      navigate({ to: "/" });
+      navigate({ to: "/home" });
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("Error logging in. Please try again.");

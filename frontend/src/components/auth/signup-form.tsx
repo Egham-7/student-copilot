@@ -15,7 +15,7 @@ import { SocialAuthButtons } from "./social-auth-buttons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import AuthBanner from "./auth-banner";
-import { signUpNewUser } from "@/lib/supabase";
+import { signInWithEmail, signUpNewUser } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const signupSchema = z
@@ -52,7 +52,9 @@ export function SignupForm() {
       const redirect_url = `${window.location.origin}/`;
 
       await signUpNewUser(email, password, redirect_url);
-      navigate({ to: "/login" });
+      await signInWithEmail(email, password)
+
+      navigate({ to: "/home" });
     } catch (error) {
       console.error("Error signing up:", error);
       toast.error("Error signing up. Please try again.");
