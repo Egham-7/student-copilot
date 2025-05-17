@@ -4,6 +4,7 @@ import notesRoute from "./modules/notes/routes";
 
 import { cors } from "hono/cors";
 import artifactsRoute from "./modules/knowledge-artifacts/routes";
+import { supabaseAuth } from "./middleware/auth";
 
 const app = new Hono();
 app.use(
@@ -14,6 +15,7 @@ app.use(
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
+  supabaseAuth,
 );
 
 app.route("/notes", notesRoute);

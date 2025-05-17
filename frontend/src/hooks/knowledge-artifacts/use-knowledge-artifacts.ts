@@ -1,11 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import type { KnowledgeArtifact } from "@/types/knowledge-artifacts";
 import { knowledgeArtifactsService } from "@/services/knowledge-artifacts";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 
-export function useKnowledgeArtifacts(userId: string) {
-  return useQuery<KnowledgeArtifact[]>({
+export const useGetKnowledgeArtifacts = (userId: string) => {
+  const { session, isLoading, error } = useSupabaseSession();
+
+  return useQuery({
     queryKey: ["knowledge-artifacts", userId],
-    queryFn: () => knowledgeArtifactsService.getAll(userId),
-    enabled: !!userId,
+    queryFn: async () => {
+      if (isLoading) return [];
+      if (error) throw new Error("Failed to fetch user session.");
+
+      const authToken = session?.access_token;
+      if (!authToken) throw new Error("Failed to fetch auth token.");
+
+      return await knowledgeArtifactsService.getAll(userId, authToken);
+    },
+    enabled: !!session?.access_token,
   });
-}
+};

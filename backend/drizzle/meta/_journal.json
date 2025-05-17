@@ -57,6 +57,13 @@
       "when": 1746565783027,
       "tag": "0007_curious_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1747518729664,
+      "tag": "0008_flippant_kree",
+      "breakpoints": true
     }
   ]
 }

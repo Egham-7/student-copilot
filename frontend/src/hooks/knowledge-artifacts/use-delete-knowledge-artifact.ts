@@ -1,20 +1,24 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { knowledgeArtifactsService } from "@/services/knowledge-artifacts";
-import { useSupabaseSession } from "../auth/use-supabase-session";
 import { toast } from "sonner";
+import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 
-export function useDeleteKnowledgeArtifact() {
+export const useDeleteKnowledgeArtifact = () => {
   const queryClient = useQueryClient();
   const { session } = useSupabaseSession();
+
   return useMutation({
-    mutationFn: (id: number) => knowledgeArtifactsService.delete(id),
+    mutationFn: async (id: number) => {
+      if (!session?.access_token) {
+        throw new Error("No authentication token available");
+      }
+      await knowledgeArtifactsService.delete(id, session.access_token);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["knowledge-artifacts", session?.user.id],
-      });
+      queryClient.invalidateQueries({ queryKey: ["knowledge-artifacts"] });
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
-}
+};

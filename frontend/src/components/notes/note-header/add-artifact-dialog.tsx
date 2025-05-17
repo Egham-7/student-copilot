@@ -25,7 +25,7 @@ import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 import { useCreateKnowledgeArtifact } from "@/hooks/knowledge-artifacts/use-create-knowledge-artifact";
 import { useLinkKnowledgeArtifacts } from "@/hooks/notes/use-link-knowledge-artifacts";
 import { useUnlinkKnowledgeArtifacts } from "@/hooks/notes/use-unlink-knowledge-artifacts";
-import { useKnowledgeArtifacts } from "@/hooks/knowledge-artifacts/use-knowledge-artifacts";
+import { useGetKnowledgeArtifacts } from "@/hooks/knowledge-artifacts/use-knowledge-artifacts";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import { KnowledgeArtifact } from "@/types/knowledge-artifacts";
 import { getFileIcon } from "@/utils/file-icons";
@@ -60,7 +60,7 @@ export function AddArtifactDialog({
   });
 
   const { session, isLoading: isSessionLoading } = useSupabaseSession();
-  const { data: allArtifacts = [] } = useKnowledgeArtifacts(
+  const { data: allArtifacts = [] } = useGetKnowledgeArtifacts(
     session?.user.id ?? "",
   );
 
@@ -106,6 +106,8 @@ export function AddArtifactDialog({
             userId: session.user.id,
             filePath: key,
           });
+
+          if (!artifact?.id) return;
 
           await linkArtifact.mutateAsync([artifact.id]);
         }),

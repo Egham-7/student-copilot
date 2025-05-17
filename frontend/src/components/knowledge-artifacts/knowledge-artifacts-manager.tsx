@@ -5,7 +5,7 @@ import { ArtifactGrid } from "./artifact-grid";
 import { ArtifactSearch } from "./artifact-search";
 import { ArtifactSort } from "./artifact-sort";
 import type { KnowledgeArtifact } from "@/types/knowledge-artifacts";
-import { useKnowledgeArtifacts } from "@/hooks/knowledge-artifacts/use-knowledge-artifacts";
+import { useGetKnowledgeArtifacts } from "@/hooks/knowledge-artifacts/use-knowledge-artifacts";
 import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 import { getFileType } from "@/utils/file-icons";
 
@@ -32,7 +32,7 @@ export function KnowledgeArtifactsManager() {
     data: artifacts = [],
     isPending: isArtifactsLoading,
     error: artifactsError,
-  } = useKnowledgeArtifacts(userId);
+  } = useGetKnowledgeArtifacts(userId);
 
   const error = artifactsError;
 

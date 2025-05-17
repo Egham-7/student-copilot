@@ -33,7 +33,7 @@ export default function NotePage() {
     error: noteError,
   } = useNote(Number(noteId));
 
-  const { mutateAsync: updateNote } = useUpdateNote();
+  const { mutateAsync: updateNote } = useUpdateNote(Number(noteId));
   const { toast } = useToast();
 
   const {
@@ -56,7 +56,6 @@ export default function NotePage() {
     const markdown = await noteEditor.blocksToHTMLLossy(noteEditor.document);
 
     await updateNote({
-      id: note.id,
       title: note.title,
       content: markdown,
       userId: session.user.id,
@@ -111,7 +110,7 @@ export default function NotePage() {
 
       const autoCompleteText = await generateAutoComplete(note.id);
 
-      const blocks = await editor.tryParseHTMLToBlocks(autoCompleteText);
+      const blocks = await editor.tryParseHTMLToBlocks(autoCompleteText ?? "");
 
       const lastBlock = editor.document.at(editor.document.length - 1);
 
