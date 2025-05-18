@@ -3,12 +3,12 @@ import { knowledgeArtifactsService } from "@/services/knowledge-artifacts";
 import { toast } from "sonner";
 import { useSupabaseSession } from "@/hooks/auth/use-supabase-session";
 
-export const useDeleteKnowledgeArtifact = () => {
+export const useDeleteKnowledgeArtifact = (id: number) => {
   const queryClient = useQueryClient();
   const { session } = useSupabaseSession();
 
   return useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async () => {
       if (!session?.access_token) {
         throw new Error("No authentication token available");
       }

@@ -4,6 +4,8 @@ import { ArtifactTable } from "./artifact-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 interface ArtifactListProps {
   artifacts: KnowledgeArtifact[];
@@ -72,10 +74,53 @@ export function ArtifactGrid({
     );
   }
 
+  const handleView = async (artifact: KnowledgeArtifact) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from("knowledge-artifacts")
+        .createSignedUrl(artifact.filePath, 3600); // 1 hour expiry
+
+      if (error) throw error;
+
+      // Open in new tab
+      window.open(data.signedUrl, "_blank");
+    } catch (error) {
+      console.error("Error viewing file:", error);
+      toast.error("Failed to view artifact.");
+    }
+  };
+
+  const handleDownload = async (artifact: KnowledgeArtifact) => {
+    try {
+      const fileName = artifact.filePath.split("/").pop() || artifact.title;
+      const { data, error } = await supabase.storage
+        .from("knowledge-artifacts")
+        .createSignedUrl(artifact.filePath, 60); // 1 minute expiry for downloads
+
+      if (error) throw error;
+
+      // Create an anchor element and trigger download
+      const link = document.createElement("a");
+      link.href = `${data.signedUrl}&download=${fileName}`; // Add download parameter to signed URL
+      link.download = fileName; // Set the download attribute
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      toast.error("Failed to download file");
+    }
+  };
+
   return viewMode === "grid" ? (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {artifacts.map((artifact) => (
-        <ArtifactCard key={artifact.id} artifact={artifact} />
+        <ArtifactCard
+          key={artifact.id}
+          artifact={artifact}
+          onView={handleView}
+          onDownload={handleDownload}
+        />
       ))}
     </div>
   ) : (

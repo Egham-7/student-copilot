@@ -20,13 +20,24 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { useDeleteKnowledgeArtifact } from "@/hooks/knowledge-artifacts/use-delete-knowledge-artifact";
 
 interface ArtifactCardProps {
   artifact: KnowledgeArtifact;
+  onView: (artifact: KnowledgeArtifact) => void;
+  onDownload: (artifact: KnowledgeArtifact) => void;
 }
 
-export function ArtifactCard({ artifact }: ArtifactCardProps) {
+export function ArtifactCard({
+  artifact,
+  onView,
+  onDownload,
+}: ArtifactCardProps) {
   const fileName = artifact.filePath.split("/").pop() || artifact.title;
+
+  const { mutateAsync: deleteArtifact } = useDeleteKnowledgeArtifact(
+    artifact.id,
+  );
 
   return (
     <Card>
@@ -42,15 +53,18 @@ export function ArtifactCard({ artifact }: ArtifactCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onView(artifact)}>
                 <Eye className="mr-2 h-4 w-4" />
                 <span>View</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDownload(artifact)}>
                 <Download className="mr-2 h-4 w-4" />
                 <span>Download</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => deleteArtifact()}
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 <span>Delete</span>
               </DropdownMenuItem>
