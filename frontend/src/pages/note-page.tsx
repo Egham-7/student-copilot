@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
@@ -22,9 +22,18 @@ import { NoteHeader } from "@/components/notes/note-header";
 import { debounce } from "lodash";
 import { DebouncedFunc } from "lodash";
 import { useGenerateAutoComplete } from "@/hooks/notes/use-generate-auto-complete";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { NoteChat } from "@/components/notes/note-chat/note-chat";
+import { NoteDock } from "@/components/notes/notes-dock";
 
 export default function NotePage() {
   const { noteId } = useParams({ from: "/_app/notes/$noteId/" });
+  const [isChatDocked, setIsChatDocked] = useState(false);
+
   const {
     data: note,
     isLoading: isNoteLoading,
@@ -60,7 +69,7 @@ export default function NotePage() {
       content: markdown,
       userId: session.user.id,
     });
-  }, [noteEditor, note, session, updateNote, toast]);
+  }, [noteEditor, note, session, updateNote]);
 
   // Debounce setup
   useEffect(() => {
@@ -169,25 +178,50 @@ export default function NotePage() {
   }
 
   return (
-    <div className="flex flex-col py-6 px-2 items-center justify-center w-full h-full">
-      <NoteHeader
-        title={note.title}
-        lastEdited={new Date(note.updatedAt)}
-        artifacts={note.artifacts}
-        noteId={note.id}
+    <ResizablePanelGroup direction="horizontal">
+      <ResizablePanel defaultSize={80} minSize={30}>
+        <div className="flex flex-col overflow-y-auto h-full">
+          <NoteHeader
+            title={note.title}
+            lastEdited={note.updatedAt ? new Date(note.updatedAt) : undefined}
+            artifacts={note.artifacts}
+            noteId={note.id}
+          />
+          <BlockNoteView
+            className="w-full h-full"
+            editor={noteEditor}
+            slashMenu={false}
+          >
+            <SuggestionMenuController
+              triggerCharacter="/"
+              getItems={async (query: string) =>
+                filterSuggestionItems(
+                  getCustomSlashMenuItems(noteEditor),
+                  query,
+                )
+              }
+            />
+          </BlockNoteView>
+        </div>
+      </ResizablePanel>
+
+      {isChatDocked ? (
+        <>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={60} minSize={20} maxSize={100}>
+            <NoteChat
+              noteId={note.id}
+              isDocked={isChatDocked}
+              onUndock={() => setIsChatDocked(false)}
+            />
+          </ResizablePanel>
+        </>
+      ) : null}
+      <NoteDock
+        noteId={Number(noteId)}
+        isDocked={isChatDocked}
+        onDock={() => setIsChatDocked(true)}
       />
-      <BlockNoteView
-        className="w-full h-full"
-        editor={noteEditor}
-        slashMenu={false}
-      >
-        <SuggestionMenuController
-          triggerCharacter="/"
-          getItems={async (query: string) =>
-            filterSuggestionItems(getCustomSlashMenuItems(noteEditor), query)
-          }
-        />
-      </BlockNoteView>
-    </div>
+    </ResizablePanelGroup>
   );
 }

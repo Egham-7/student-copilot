@@ -13,8 +13,8 @@ import { ArtifactList } from "./note-header/artifact-list";
 
 interface NoteHeaderProps {
   title: string;
-  lastEdited: Date;
-  artifacts: KnowledgeArtifact[];
+  lastEdited?: Date;
+  artifacts?: KnowledgeArtifact[];
   noteId: number;
 }
 
@@ -24,8 +24,10 @@ export function NoteHeader({
   artifacts,
   noteId,
 }: NoteHeaderProps) {
-  const timeAgo = formatDistanceToNow(lastEdited, { addSuffix: true });
-  const fullDate = format(lastEdited, "PPpp");
+  const timeAgo = lastEdited
+    ? formatDistanceToNow(lastEdited, { addSuffix: true })
+    : undefined;
+  const fullDate = lastEdited ? format(lastEdited, "PPpp") : undefined;
 
   return (
     <div className="w-full flex items-center justify-between px-4 py-2 border-b bg-background text-foreground border-border">
@@ -48,8 +50,7 @@ export function NoteHeader({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-        <ArtifactList artifacts={artifacts} />
+        {artifacts && <ArtifactList artifacts={artifacts} />}
 
         <AddArtifactDialog noteId={noteId} artifacts={artifacts} />
       </div>

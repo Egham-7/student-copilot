@@ -43,7 +43,7 @@ type ArtifactFormValues = z.infer<typeof artifactSchema>;
 
 interface AddArtifactDialogProps {
   noteId: number;
-  artifacts: KnowledgeArtifact[];
+  artifacts?: KnowledgeArtifact[];
 }
 
 export function AddArtifactDialog({
@@ -188,7 +188,7 @@ export function AddArtifactDialog({
 
             <ArtifactListViewer
               allArtifacts={allArtifacts}
-              linkedArtifactIds={artifacts.map((a) => a.id)}
+              linkedArtifactIds={artifacts?.map((a) => a.id) ?? []}
               onLink={(id) => linkArtifact.mutateAsync([id])}
               onUnlink={(id) => unlinkArtifact.mutate([id])}
               isMutating={linkArtifact.isPending || unlinkArtifact.isPending}

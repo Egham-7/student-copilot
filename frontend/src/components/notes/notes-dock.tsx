@@ -1,4 +1,3 @@
-import React from "react";
 import { BiBot } from "react-icons/bi";
 
 import { ModeToggle } from "@/components/mode-toggle";
@@ -11,10 +10,16 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Dock, DockIcon } from "../magicui/dock";
-import { NoteChat } from "./note-chat";
+import { NoteChatPopover } from "./note-chat-popover";
+import { useState } from "react";
 
-export function NoteDock() {
-  const [isAgentOpen, setAgentOpen] = React.useState(false);
+interface NoteDockProps {
+  noteId: number;
+  isDocked: boolean;
+  onDock: () => void;
+}
+export function NoteDock({ noteId, isDocked, onDock }: NoteDockProps) {
+  const [isAgentOpen, setAgentOpen] = useState(false);
 
   return (
     <>
@@ -25,7 +30,11 @@ export function NoteDock() {
             {/* Chat Icon */}
             <DockIcon>
               <Tooltip>
-                <NoteChat noteId={10} />
+                <NoteChatPopover
+                  noteId={noteId}
+                  isDocked={isDocked}
+                  onDock={onDock}
+                />
               </Tooltip>
             </DockIcon>
 
