@@ -1,47 +1,45 @@
-import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { useEffect } from "react";
 
-type UseSupabaseSessionResult = {
-  session: Session | null;
-  isLoading: boolean;
-  error: Error | null;
-};
+// Query key for session
+const SESSION_QUERY_KEY = ["supabase-session"];
 
-export function useSupabaseSession(): UseSupabaseSessionResult {
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export function useSupabaseSession() {
+  const queryClient = useQueryClient();
 
+  // Set up the query for fetching session
+  const {
+    data: session,
+    isLoading,
+    error,
+  } = useQuery<Session | null, Error>({
+    queryKey: SESSION_QUERY_KEY,
+    queryFn: async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw new Error(error.message);
+      return data.session;
+    },
+  });
+
+  // Set up auth state change listener
   useEffect(() => {
-    let isMounted = true;
-
-    (async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (isMounted) {
-          setSession(data.session);
-          setError(error ? new Error(error.message) : null);
-        }
-      } catch (err) {
-        if (isMounted) setError(err as Error);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    })();
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (isMounted) setSession(session);
+      // Update query cache when auth state changes
+      queryClient.setQueryData(SESSION_QUERY_KEY, session);
     });
 
     return () => {
-      isMounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
-  return { session, isLoading, error };
+  return {
+    session,
+    isLoading,
+    error,
+  };
 }
