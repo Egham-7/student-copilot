@@ -1,4 +1,3 @@
-// @/themes/blocknote-theme.ts
 import { Theme } from "@blocknote/mantine";
 
 export const blockNoteTheme: { light: Theme; dark: Theme } = {
