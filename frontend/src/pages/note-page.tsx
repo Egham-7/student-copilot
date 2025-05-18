@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
+import { BlockNoteView, Theme } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import {
   getDefaultReactSlashMenuItems,
@@ -29,10 +29,14 @@ import {
 } from "@/components/ui/resizable";
 import { NoteChat } from "@/components/notes/note-chat/note-chat";
 import { NoteDock } from "@/components/notes/notes-dock";
+import { useTheme } from "@/hooks/use-theme";
+import { blockNoteTheme } from "@/lib/blocknote/theme";
 
 export default function NotePage() {
   const { noteId } = useParams({ from: "/_app/notes/$noteId/" });
   const [isChatDocked, setIsChatDocked] = useState(false);
+
+  const { theme } = useTheme();
 
   const {
     data: note,
@@ -179,7 +183,7 @@ export default function NotePage() {
 
   return (
     <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel defaultSize={80} minSize={30}>
+      <ResizablePanel defaultSize={isChatDocked ? 65 : 100} minSize={60}>
         <div className="flex flex-col overflow-y-auto h-full">
           <NoteHeader
             title={note.title}
@@ -188,6 +192,7 @@ export default function NotePage() {
             noteId={note.id}
           />
           <BlockNoteView
+            theme={blockNoteTheme}
             className="w-full h-full"
             editor={noteEditor}
             slashMenu={false}
@@ -208,7 +213,7 @@ export default function NotePage() {
       {isChatDocked ? (
         <>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={60} minSize={20} maxSize={100}>
+          <ResizablePanel defaultSize={35} minSize={15} maxSize={40}>
             <NoteChat
               noteId={note.id}
               isDocked={isChatDocked}
